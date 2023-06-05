@@ -45,7 +45,8 @@
             "name": "linux64",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${BOOST_ROOT}"
+                "${BOOST_ROOT}",
+                "${workspaceFolder}/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

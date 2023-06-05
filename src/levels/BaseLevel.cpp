@@ -1,6 +1,6 @@
 #include "BaseLevel.h"
 
-namespace GameLogic {
+namespace T10 {
 	BaseLevel::BaseLevel(boost::shared_ptr<irr::scene::ISceneManager> sceneManager, boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment, SwitchLevelCallbackFunction switchLevelCallback) :
 		_sceneManager(sceneManager)
 		, _guiEnvironment(guiEnvironment)

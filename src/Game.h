@@ -5,12 +5,12 @@
 
 #include "IGame.h"
 
-#include "Levels/ILevel.h"
-#include "Levels/LevelType.h"
+#include "levels/ILevel.h"
+#include "levels/LevelType.h"
 
 using namespace std;
 
-namespace GameLogic {
+namespace T10 {
 	class Game : public IGame, public irr::IEventReceiver {
 	public:
 		~Game();
@@ -33,5 +33,5 @@ namespace GameLogic {
 	};
 }
 
-extern "C" BOOST_SYMBOL_EXPORT GameLogic::Game game;
-GameLogic::Game game;
+extern "C" BOOST_SYMBOL_EXPORT T10::Game game;
+T10::Game game;

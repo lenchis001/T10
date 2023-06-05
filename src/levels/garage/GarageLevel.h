@@ -1,11 +1,11 @@
 #pragma once
 
-#include "BaseLevel.h"
+#include "levels/BaseLevel.h"
 
 #include "boost/smart_ptr.hpp"
 #include "boost/function.hpp"
 
-namespace GameLogic {
+namespace T10 {
 	class GarageLevel : public BaseLevel, public boost::enable_shared_from_this<ILevel> {
 	public:
 		GarageLevel(boost::shared_ptr<irr::scene::ISceneManager> sceneManager, boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment, SwitchLevelCallbackFunction switchLevelCallback);

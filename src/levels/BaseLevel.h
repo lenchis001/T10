@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace GameLogic {
+namespace T10 {
 	class BaseLevel : public ILevel {
 	public:
 		BaseLevel(boost::shared_ptr<irr::scene::ISceneManager> sceneManager, boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment, SwitchLevelCallbackFunction switchLevelCallback);

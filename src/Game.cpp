@@ -2,9 +2,9 @@
 
 #include "boost/bind.hpp"
 
-#include "Levels/GarageLevel.h"
+#include "levels/garage/GarageLevel.h"
 
-namespace GameLogic {
+namespace T10 {
 	Game::~Game()
 	{
 	}

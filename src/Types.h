@@ -3,10 +3,10 @@
 #include "string"
 #include "map"
 
-#include "Levels/LevelType.h"
+#include "levels/LevelType.h"
 
 using namespace std;
 
-namespace GameLogic {
+namespace T10 {
 	typedef void SwitchLevelCallback(LevelType type, map<wstring, wstring> params);
 }

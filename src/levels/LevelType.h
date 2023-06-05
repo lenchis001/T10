@@ -1,6 +1,6 @@
 #pragma once
 
-namespace GameLogic {
+namespace T10 {
 	enum LevelType {
 		MENU,
 		GAME

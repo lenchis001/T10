@@ -1,6 +1,7 @@
 #include "GarageLevel.h"
+#include "cameras/GarageCameraAnimator.h"
 
-namespace GameLogic {
+namespace T10 {
 	GarageLevel::GarageLevel(boost::shared_ptr<irr::scene::ISceneManager> sceneManager, boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment, SwitchLevelCallbackFunction switchLevelCallback) :
 		BaseLevel(sceneManager, guiEnvironment, switchLevelCallback)
 	{
@@ -35,9 +36,11 @@ namespace GameLogic {
 	void GarageLevel::_createScene()
 	{
 		std::wstring path = L"Resources/Levels/Garage/Garage.irr";
-
 		_loadScene(path);
-		_sceneManager->addCameraSceneNodeMaya();
+
+		_sceneManager->addCameraSceneNode()->addAnimator(
+			boost::make_shared<T10::levels::garage::cameras::GarageCameraAnimator>()
+		);
 	}
 
 	void GarageLevel::_goToBattle(irr::gui::IGUIButton* button)
