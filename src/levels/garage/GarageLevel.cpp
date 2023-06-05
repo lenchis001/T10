@@ -1,9 +1,9 @@
 #include "GarageLevel.h"
 #include "cameras/GarageCameraAnimator.h"
 
-namespace T10 {
-	GarageLevel::GarageLevel(boost::shared_ptr<irr::scene::ISceneManager> sceneManager, boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment, SwitchLevelCallbackFunction switchLevelCallback) :
-		BaseLevel(sceneManager, guiEnvironment, switchLevelCallback)
+namespace T10
+{
+	GarageLevel::GarageLevel(boost::shared_ptr<irr::scene::ISceneManager> sceneManager, boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment, SwitchLevelCallbackFunction switchLevelCallback) : BaseLevel(sceneManager, guiEnvironment, switchLevelCallback)
 	{
 	}
 
@@ -17,9 +17,10 @@ namespace T10 {
 	{
 	}
 
-	bool GarageLevel::OnEvent(const irr::SEvent& event)
+	bool GarageLevel::OnEvent(const irr::SEvent &event)
 	{
-		if (event.EventType == irr::EEVENT_TYPE::EET_GUI_EVENT) {
+		if (event.EventType == irr::EEVENT_TYPE::EET_GUI_EVENT)
+		{
 			if (event.GUIEvent.EventType == irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED)
 				return true;
 		}
@@ -39,11 +40,10 @@ namespace T10 {
 		_loadScene(path);
 
 		_sceneManager->addCameraSceneNode()->addAnimator(
-			boost::make_shared<T10::levels::garage::cameras::GarageCameraAnimator>()
-		);
+			boost::make_shared<T10::levels::garage::cameras::GarageCameraAnimator>(irr::core::vector3df(0, 2, 0), 10));
 	}
 
-	void GarageLevel::_goToBattle(irr::gui::IGUIButton* button)
+	void GarageLevel::_goToBattle(irr::gui::IGUIButton *button)
 	{
 	}
 }
