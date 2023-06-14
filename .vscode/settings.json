@@ -1,5 +1,5 @@
 {
-    "C_Cpp.intelliSenseEngine" : "Tag Parser",
+    //"C_Cpp.intelliSenseEngine" : "Tag Parser",
     "files.associations": {
         "iosfwd": "cpp",
         "__locale": "cpp",
@@ -93,5 +93,5 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
 }

@@ -46,7 +46,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${BOOST_ROOT}",
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

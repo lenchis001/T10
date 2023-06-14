@@ -1,16 +1,22 @@
 #include "BaseLevel.h"
 
-namespace T10 {
-	BaseLevel::BaseLevel(boost::shared_ptr<irr::scene::ISceneManager> sceneManager, boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment, SwitchLevelCallbackFunction switchLevelCallback) :
-		_sceneManager(sceneManager)
-		, _guiEnvironment(guiEnvironment)
-		, _switchLevelCallback(switchLevelCallback) { }
+namespace T10
+{
+	BaseLevel::BaseLevel(
+		boost::shared_ptr<irr::scene::ISceneManager> sceneManager,
+		boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
+		boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
+		SwitchLevelCallbackFunction switchLevelCallback)
+		: _sceneManager(sceneManager),
+		  _guiEnvironment(guiEnvironment),
+		  _functionsProcessingAware(functionsProcessingAware),
+		  _switchLevelCallback(switchLevelCallback) {}
 
 	void BaseLevel::load()
 	{
 	}
 
-	bool BaseLevel::OnEvent(const irr::SEvent& event)
+	bool BaseLevel::OnEvent(const irr::SEvent &event)
 	{
 		return false;
 	}
@@ -20,7 +26,7 @@ namespace T10 {
 		_switchLevelCallback(type, params);
 	}
 
-	void BaseLevel::_loadScene(std::wstring& path)
+	void BaseLevel::_loadScene(std::wstring &path)
 	{
 		auto absolutePath = boost::filesystem::absolute(path);
 		_patchWorkingDirectory(absolutePath);
@@ -30,7 +36,7 @@ namespace T10 {
 		_unpatchWorkingDirectory();
 	}
 
-	void BaseLevel::_loadGui(std::wstring& path)
+	void BaseLevel::_loadGui(std::wstring &path)
 	{
 		auto absolutePath = boost::filesystem::absolute(path);
 		_patchWorkingDirectory(absolutePath);
@@ -40,7 +46,7 @@ namespace T10 {
 		_unpatchWorkingDirectory();
 	}
 
-	void BaseLevel::_patchWorkingDirectory(const boost::filesystem::path& pathToFile)
+	void BaseLevel::_patchWorkingDirectory(const boost::filesystem::path &pathToFile)
 	{
 		_workingDirectoryBuffer = boost::filesystem::current_path().wstring();
 

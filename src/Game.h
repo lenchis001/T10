@@ -15,7 +15,7 @@ namespace T10 {
 	public:
 		~Game();
 
-		void startGame(boost::shared_ptr<irr::IrrlichtDevice> device) override;
+		void startGame(boost::shared_ptr<irr::IrrlichtDevice> device, boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware) override;
 
 		void finishGame() override;
 

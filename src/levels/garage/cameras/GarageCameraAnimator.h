@@ -10,7 +10,9 @@ namespace T10::levels::garage::cameras
         float distance = 10,
         float minTheta = 0.6F,
         float maxTheta = irr::core::HALF_PI - 0.2,
-        int sensitivity = 300);
+        int sensitivity = 300,
+        float phi = 0.85,
+        float theta = 1.2);
 
     bool OnEvent(const irr::SEvent &event) override;
 

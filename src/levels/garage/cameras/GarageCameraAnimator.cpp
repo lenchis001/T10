@@ -13,7 +13,9 @@ namespace T10::levels::garage::cameras
         float distance,
         float minTheta,
         float maxTheta,
-        int sensitivity)
+        int sensitivity,
+        float phi,
+        float theta)
     {
         _target = target;
         _distance = distance;
@@ -24,6 +26,11 @@ namespace T10::levels::garage::cameras
         assert(_minTheta >= 0);
         assert(maxTheta <= irr::core::PI);
         assert(_sensitivity > 0);
+
+        _phi = phi;
+        _theta = theta;
+        _recalculatePosition();
+        _isCameraUpdateRequired = true;
 
         // It means that start point is not set yet
         _previousMousePoint.X = -1;
