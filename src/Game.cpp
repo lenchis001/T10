@@ -4,9 +4,13 @@
 
 #include "levels/garage/GarageLevel.h"
 
-#include "bll/services/User/UserService.h"
-#include "dal/api_services/User/UserApiService.h"
-#include "dal/api_services/CommunicationService.h"
+#include "BLL/Services/User/UserService.h"
+#include "DAL/ApiServices/User/UserApiService.h"
+
+#include "BLL/Services/Tank/TankService.h"
+#include "DAL/ApiServices/Tank/TankApiService.h"
+
+#include "DAL/ApiServices/CommunicationService.h"
 
 namespace T10
 {
@@ -25,15 +29,20 @@ namespace T10
 		_sceneManager = device->getSceneManager();
 		_guiEnvironment = device->getGUIEnvironment();
 
-		boost::shared_ptr<dal::api_services::ICommunicationService> communicationService = boost::make_shared<dal::api_services::CommunicationService>();
-		boost::shared_ptr<dal::api_services::User::IUserApiService> userApiService = boost::make_shared<dal::api_services::User::UserApiService>(communicationService);
-		boost::shared_ptr<bll::services::User::IUserService> userService = boost::make_shared<bll::services::User::UserService>(userApiService);
+		boost::shared_ptr<DAL::ApiServices::ICommunicationService> communicationService = boost::make_shared<DAL::ApiServices::CommunicationService>();
+
+		boost::shared_ptr<DAL::ApiServices::User::IUserApiService> userApiService = boost::make_shared<DAL::ApiServices::User::UserApiService>(communicationService);
+		boost::shared_ptr<BLL::Services::User::IUserService> userService = boost::make_shared<BLL::Services::User::UserService>(userApiService);
+
+		boost::shared_ptr<DAL::ApiServices::Tanks::ITankApiService> tankApiService = boost::make_shared<DAL::ApiServices::Tanks::TankApiService>(communicationService);
+		boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService = boost::make_shared<BLL::Services::Tanks::TankService>(tankApiService);
 
 		_addLevel(LevelType::MENU, boost::make_shared<GarageLevel>(
 									   _sceneManager,
 									   _guiEnvironment,
 									   functionsProcessingAware,
 									   userService,
+									   tankService,
 									   boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		_onSwitchlevelRequested(LevelType::MENU, {});

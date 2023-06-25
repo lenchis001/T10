@@ -5,7 +5,8 @@
 #include "boost/smart_ptr.hpp"
 #include "boost/function.hpp"
 
-#include "bll/services/User/IUserService.h"
+#include "BLL/Services/User/IUserService.h"
+#include "BLL/Services/Tank/ITankService.h"
 
 namespace T10
 {
@@ -16,7 +17,8 @@ namespace T10
 			boost::shared_ptr<irr::scene::ISceneManager> sceneManager,
 			boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
-			boost::shared_ptr<bll::services::User::IUserService> userService,
+			boost::shared_ptr<BLL::Services::User::IUserService> userService,
+			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
 			SwitchLevelCallbackFunction switchLevelCallback);
 
 		void onLoadRequested() override;
@@ -27,7 +29,8 @@ namespace T10
 	private:
 		boost::shared_ptr<irr::gui::IGUIListBox> _tanksList;
 
-		boost::shared_ptr<bll::services::User::IUserService> _userService;
+		boost::shared_ptr<BLL::Services::User::IUserService> _userService;
+		boost::shared_ptr<BLL::Services::Tanks::ITankService> _tankService;
 
 		void _createUi();
 		void _createScene();

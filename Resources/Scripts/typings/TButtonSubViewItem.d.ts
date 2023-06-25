@@ -1,2 +1,0 @@
-interface TButtonSubViewItem extends TBaseSubViewItem{
-}
