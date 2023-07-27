@@ -5,11 +5,10 @@
 
 namespace T10::BLL::Models
 {
-    template <class D>
     class ActionResult
     {
     public:
-        ActionResult(ErrorCode error, D &data) : _data(data)
+        ActionResult(ErrorCode error)
         {
             _error = error;
         }
@@ -19,14 +18,8 @@ namespace T10::BLL::Models
             return _error;
         }
 
-        const D &getData() const
-        {
-            return _data;
-        }
-
     private:
         ErrorCode _error;
-        D _data;
     };
 }
 

@@ -36,5 +36,6 @@ namespace T10
 		void _createScene();
 
 		void _goToBattle();
+		void _onTankSelected();
 	};
 }

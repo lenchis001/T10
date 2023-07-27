@@ -10,14 +10,14 @@ namespace T10::BLL::Services::Tanks
         _tankApiService = tankApiService;
     }
 
-    boost::shared_ptr<ActionResult<std::vector<Models::Tanks::Tank>>> TankService::getAll()
+    boost::shared_ptr<DataActionResult<std::vector<Models::Tanks::Tank>>> TankService::getAll()
     {
-        boost::shared_ptr<DAL::Models::ActionResult<std::vector<DAL::Models::Tanks::Tank>>> dalTankResult = _tankApiService->getAll();
+        boost::shared_ptr<DAL::Models::DataActionResult<std::vector<DAL::Models::Tanks::Tank>>> dalTankResult = _tankApiService->getAll();
 
         ErrorCode bllErrorCode = _toBllErrorCode(dalTankResult->getError());
         std::vector<Tank> bllTanks = _toBllTank(dalTankResult->getData());
 
-        return boost::make_shared<Models::ActionResult<std::vector<Tank>>>(bllErrorCode, bllTanks);
+        return boost::make_shared<Models::DataActionResult<std::vector<Tank>>>(bllErrorCode, bllTanks);
     }
 
     std::vector<Tank> TankService::_toBllTank(const std::vector<DAL::Models::Tanks::Tank>& dalTanks)

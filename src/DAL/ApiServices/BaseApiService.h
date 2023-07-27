@@ -5,7 +5,7 @@
 #include "boost/property_tree/ptree.hpp"
 #include "boost/property_tree/json_parser.hpp"
 
-#include "DAL/Models/ActionResult.h"
+#include "DAL/Models/DataActionResult.h"
 #include "DAL/ApiServices/ICommunicationService.h"
 
 namespace T10::DAL::ApiServices
@@ -19,14 +19,14 @@ namespace T10::DAL::ApiServices
         }
 
     protected:
-        Models::ActionResult<boost::property_tree::wptree> processRequest(Models::HttpRequest &request)
+        Models::DataActionResult<boost::property_tree::wptree> processRequest(Models::HttpRequest &request)
         {
             Models::HttpResponse<> response = _communicationService->process(request);
 
             boost::property_tree::wptree ptreeData = toWPtree(response.getBody());
             Models::ErrorCode error = toErrorCode(response.getStatusCode());
 
-            return Models::ActionResult<boost::property_tree::wptree>(Models::ErrorCode::OK, ptreeData);
+            return Models::DataActionResult<boost::property_tree::wptree>(error, ptreeData);
         }
 
         template <typename T>

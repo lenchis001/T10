@@ -14,7 +14,7 @@ namespace T10::BLL::Services::User
     public:
         UserService(boost::shared_ptr<DAL::ApiServices::User::IUserApiService> userApiService);
 
-        boost::shared_ptr<Models::ActionResult<Models::User::Info>> getInfo() override;
+        boost::shared_ptr<Models::DataActionResult<Models::User::Info>> getInfo() override;
 
     private:
         boost::shared_ptr<DAL::ApiServices::User::IUserApiService> _userApiService;

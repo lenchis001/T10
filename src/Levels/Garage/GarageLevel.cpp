@@ -36,15 +36,32 @@ namespace T10
 	{
 		if (event.EventType == irr::EEVENT_TYPE::EET_GUI_EVENT)
 		{
-			if (event.GUIEvent.EventType == irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED)
+			switch (event.GUIEvent.EventType)
+			{
+			case irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
 			{
 				boost::shared_ptr<irr::gui::IGUIButton> button = boost::static_pointer_cast<irr::gui::IGUIButton>(event.GUIEvent.Caller);
-				if (button->getID() == GO_TO_BATTLE_CONTROL)
+				if (event.GUIEvent.Caller->getID() == GO_TO_BATTLE_CONTROL)
 				{
 					_goToBattle();
+
+					return true;
 				}
 
-				return true;
+				break;
+			}
+			case irr::gui::EGUI_EVENT_TYPE::EGET_LISTBOX_CHANGED:
+			{
+				if(event.GUIEvent.Caller->getID() == TANKS_LIST_CONTROL) {
+					std::cout<<"A tank selected"<<std::endl;
+
+					return true;
+				}
+
+				break;
+			}
+			default:
+				return false;
 			}
 		}
 
@@ -63,13 +80,13 @@ namespace T10
 			ThreadTypes::THREAD_POOL,
 			[&]()
 			{
-				boost::shared_ptr<BLL::Models::ActionResult<BLL::Models::User::Info>> userInfo = _userService->getInfo();
+				boost::shared_ptr<BLL::Models::DataActionResult<BLL::Models::User::Info>> userInfo = _userService->getInfo();
 
 				_functionsProcessingAware->addFuctionToQueue(
 					ThreadTypes::RENDER_THREAD,
 					[&, userInfo]()
 					{
-boost::shared_ptr<irr::gui::IGUIElement> element;
+						boost::shared_ptr<irr::gui::IGUIElement> element;
 
 						element = _guiEnvironment->getRootGUIElement()->getElementFromId(USER_NAME_CONTROL, true);
 						boost::shared_ptr<irr::gui::IGUIStaticText> userNameLabel = boost::static_pointer_cast<irr::gui::IGUIStaticText>(element);
@@ -85,7 +102,7 @@ boost::shared_ptr<irr::gui::IGUIElement> element;
 			ThreadTypes::THREAD_POOL,
 			[&]()
 			{
-				boost::shared_ptr<BLL::Models::ActionResult<std::vector<BLL::Models::Tanks::Tank>>> allTank = _tankService->getAll();
+				boost::shared_ptr<BLL::Models::DataActionResult<std::vector<BLL::Models::Tanks::Tank>>> allTank = _tankService->getAll();
 
 				_functionsProcessingAware->addFuctionToQueue(
 					ThreadTypes::RENDER_THREAD,
@@ -115,5 +132,9 @@ boost::shared_ptr<irr::gui::IGUIElement> element;
 		if (selectedTankIndex != -1)
 		{
 		}
+	}
+
+	void GarageLevel::_onTankSelected() {
+		irr::s32 selectedTankIndex = _tanksList->getSelected();
 	}
 }

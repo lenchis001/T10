@@ -13,7 +13,7 @@ namespace T10::BLL::Services::Tanks
     public:
         TankService(boost::shared_ptr<DAL::ApiServices::Tanks::ITankApiService> tankApiService);
 
-        boost::shared_ptr<Models::ActionResult<std::vector<Models::Tanks::Tank>>> getAll() override;
+        boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::Tank>>> getAll() override;
 
     private:
         boost::shared_ptr<DAL::ApiServices::Tanks::ITankApiService> _tankApiService;

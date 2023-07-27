@@ -15,7 +15,7 @@ namespace T10::DAL::ApiServices::Tanks
     public:
         TankApiService(boost::shared_ptr<ICommunicationService> communicationService);
 
-        boost::shared_ptr<Models::ActionResult<std::vector<Models::Tanks::Tank>>> getAll() override;
+        boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::Tank>>> getAll() override;
 
     private:
         boost::shared_ptr<ICommunicationService> _communicationService;
