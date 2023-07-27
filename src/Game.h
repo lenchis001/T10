@@ -5,10 +5,11 @@
 
 #include "IGame.h"
 
-#include "levels/ILevel.h"
-#include "levels/LevelType.h"
+#include "Levels/ILevel.h"
+#include "Levels/LevelType.h"
 
 using namespace std;
+using namespace T10::Levels;
 
 namespace T10 {
 	class Game : public IGame, public irr::IEventReceiver {

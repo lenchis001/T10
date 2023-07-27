@@ -1,9 +1,12 @@
-#pragma once
+#ifndef LEVEL_TYPE
+#define LEVEL_TYPE
 
-namespace T10 {
+namespace T10::Levels {
 	enum LevelType {
-		SIGN_IN
+		SIGN_IN,
 		MENU,
 		GAME
 	};
 }
+
+#endif

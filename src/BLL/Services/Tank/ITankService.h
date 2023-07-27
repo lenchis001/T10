@@ -5,7 +5,7 @@
 
 #include "boost/smart_ptr.hpp"
 
-#include "BLL/Models/Tanks/Tank.h"
+#include "BLL/Models/Tanks/Tank.hpp"
 #include "BLL/Models/DataActionResult.h"
 
 namespace T10::BLL::Services::Tanks

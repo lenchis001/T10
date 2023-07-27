@@ -3,7 +3,7 @@
 
 #include "string"
 
-#include "DAL/Models/User/Info.h"
+#include "DAL/Models/User/Info.hpp"
 #include "DAL/Models/User/SignInInfo.hpp"
 #include "DAL/Models/DataActionResult.h"
 

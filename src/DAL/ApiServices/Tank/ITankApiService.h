@@ -5,7 +5,7 @@
 
 #include "boost/smart_ptr.hpp"
 
-#include "DAL/Models/Tanks/Tank.h"
+#include "DAL/Models/Tanks/Tank.hpp"
 #include "DAL/Models/DataActionResult.h"
 
 namespace T10::DAL::ApiServices::Tanks

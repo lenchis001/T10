@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ILEVEL
+#define ILEVEL
 
 #include "string"
 #include "map"
@@ -12,7 +13,7 @@
 
 using namespace std;
 
-namespace T10 {
+namespace T10::Levels {
 	typedef void SwitchLevelCallback(LevelType type, map<wstring, wstring> params);
 	typedef boost::function<SwitchLevelCallback> SwitchLevelCallbackFunction;
 
@@ -22,3 +23,5 @@ namespace T10 {
 		virtual void onUnloadRequested() = 0;
 	};
 }
+
+#endif

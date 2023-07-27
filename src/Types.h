@@ -3,10 +3,10 @@
 #include "string"
 #include "map"
 
-#include "levels/LevelType.h"
+#include "Levels/LevelType.h"
 
 using namespace std;
 
 namespace T10 {
-	typedef void SwitchLevelCallback(LevelType type, map<wstring, wstring> params);
+	typedef void SwitchLevelCallback(Levels::LevelType type, map<wstring, wstring> params);
 }

@@ -5,7 +5,7 @@
 #include "boost/lexical_cast.hpp"
 
 #include "IUserApiService.h"
-#include "DAL/ApiServices/BaseApiService.h"
+#include "DAL/ApiServices/BaseApiService.hpp"
 
 #include "DAL/ApiServices/ICommunicationService.h"
 
@@ -37,18 +37,19 @@ namespace T10::DAL::ApiServices::User
             return Models::DataActionResult<Models::User::Info>(Models::ErrorCode::OK, info);
         }
 
-        Models::DataActionResult<Models::User::SignInInfo> signIn(std::wstring email, std::wstring password) override {
-            HttpRequest request = HttpRequest(L"/api/v1/user/signIn", HttpRequestType::POST, L"", {});
+        Models::DataActionResult<Models::User::SignInInfo> signIn(std::wstring email, std::wstring password) override
+        {
+            // HttpRequest request = HttpRequest(L"/api/v1/user/signIn", HttpRequestType::POST, L"", {});
 
-            Models::DataActionResult<boost::property_tree::wptree> ptreeResult = processRequest(request);
+            // Models::DataActionResult<boost::property_tree::wptree> ptreeResult = processRequest(request);
 
-            std::wstring name = ptreeResult.getData().get_child(L"name").get_value(L"Unknown");
-            int money = boost::lexical_cast<int>(ptreeResult.getData().get_child(L"money").get_value(L"-1"));
-            std::vector<int> tanks = asVector<int>(ptreeResult.getData(), L"tanks");
+            // std::wstring name = ptreeResult.getData().get_child(L"name").get_value(L"Unknown");
+            // int money = boost::lexical_cast<int>(ptreeResult.getData().get_child(L"money").get_value(L"-1"));
+            // std::vector<int> tanks = asVector<int>(ptreeResult.getData(), L"tanks");
 
-            Models::User::Info info = Info(name, money, tanks);
+            SignInInfo info = SignInInfo(L"");
 
-            return Models::DataActionResult<Models::User::Info>(Models::ErrorCode::OK, info);
+            return Models::DataActionResult<Models::User::SignInInfo>(Models::ErrorCode::OK, info);
         }
 
     private:

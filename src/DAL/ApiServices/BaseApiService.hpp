@@ -38,6 +38,19 @@ namespace T10::DAL::ApiServices
             return r;
         }
 
+        std::wstring toJson(std::map<std::wstring, std::wstring> map) {
+            boost::property_tree::wptree wptree;
+
+            for(std::pair<std::wstring, std::wstring> pair : map) {
+                wptree.add(pair.first, pair.second);
+            }
+
+            std::wstringstream wss;
+            boost::property_tree::json_parser::write_json(wss, wptree);
+            
+            return wss.str(); 
+        }
+
     private:
         boost::property_tree::wptree toWPtree(const std::wstring &jsonData)
         {

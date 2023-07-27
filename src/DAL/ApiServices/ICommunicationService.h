@@ -1,8 +1,8 @@
 #ifndef ICOMMUNICATION_SERVICE
 #define ICOMMUNICATION_SERVICE
 
-#include "DAL/Models/HttpRequest.h"
-#include "DAL/Models/HttpResponse.h"
+#include "DAL/Models/HttpRequest.hpp"
+#include "DAL/Models/HttpResponse.hpp"
 
 namespace T10::DAL::ApiServices
 {

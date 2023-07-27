@@ -2,16 +2,16 @@
 
 #include "boost/bind.hpp"
 
-#include "levels/garage/GarageLevel.h"
-#include "levels/SignIn/SignInLevel.h"
+#include "Levels/Garage/GarageLevel.hpp"
+#include "Levels/SignIn/SignInLevel.hpp"
 
-#include "BLL/Services/User/UserService.h"
-#include "DAL/ApiServices/User/UserApiService.h"
+#include "BLL/Services/User/UserService.hpp"
+#include "DAL/ApiServices/User/UserApiService.hpp"
 
-#include "BLL/Services/Tank/TankService.h"
-#include "DAL/ApiServices/Tank/TankApiService.h"
+#include "BLL/Services/Tank/TankService.hpp"
+#include "DAL/ApiServices/Tank/TankApiService.hpp"
 
-#include "DAL/ApiServices/CommunicationService.h"
+#include "DAL/ApiServices/CommunicationService.hpp"
 
 namespace T10
 {
@@ -38,10 +38,14 @@ namespace T10
 		boost::shared_ptr<DAL::ApiServices::Tanks::ITankApiService> tankApiService = boost::make_shared<DAL::ApiServices::Tanks::TankApiService>(communicationService);
 		boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService = boost::make_shared<BLL::Services::Tanks::TankService>(tankApiService);
 
+		_addLevel(LevelType::SIGN_IN, boost::make_shared<SignIn::SignInLevel>(
+										  _sceneManager,
+										  _guiEnvironment,
+										  functionsProcessingAware,
+										  userService,
+										  boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
-		_addLevel(LevelType::SIGN_IN, boost::make_shared<Levels::SignInLevel>());
-
-		_addLevel(LevelType::MENU, boost::make_shared<GarageLevel>(
+		_addLevel(LevelType::MENU, boost::make_shared<Garage::GarageLevel>(
 									   _sceneManager,
 									   _guiEnvironment,
 									   functionsProcessingAware,

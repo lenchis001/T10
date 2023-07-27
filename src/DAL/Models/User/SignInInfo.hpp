@@ -1,5 +1,5 @@
-#ifndef DAL_SIGN_IN_RESULT
-#define DAL_SIGN_IN_RESULT
+#ifndef DAL_SIGN_IN_INFO
+#define DAL_SIGN_IN_INFO
 
 #include "string"
 
@@ -15,7 +15,7 @@ namespace T10::DAL::Models::User
 
     private:
         std::wstring _token;
-    }
-};
+    };
+}
 
 #endif
