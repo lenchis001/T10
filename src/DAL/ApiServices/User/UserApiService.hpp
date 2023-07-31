@@ -1,6 +1,8 @@
 #ifndef USER_API_SERVICE
 #define USER_API_SERVICE
 
+#include "map"
+
 #include "boost/smart_ptr.hpp"
 #include "boost/lexical_cast.hpp"
 
@@ -28,28 +30,38 @@ namespace T10::DAL::ApiServices::User
 
             Models::DataActionResult<boost::property_tree::wptree> ptreeResult = processRequest(request);
 
-            std::wstring name = ptreeResult.getData().get_child(L"name").get_value(L"Unknown");
-            int money = boost::lexical_cast<int>(ptreeResult.getData().get_child(L"money").get_value(L"-1"));
-            std::vector<int> tanks = asVector<int>(ptreeResult.getData(), L"tanks");
+            const boost::property_tree::wptree& data = ptreeResult.getData();
+            std::wstring email = data.get_child(L"email").get_value<std::wstring>();
+            std::wstring name = data.get_child(L"name").get_value<std::wstring>();
+            int money = data.get_child(L"money").get_value<int>();
+            int battlesAmount = data.get_child(L"battlesAmount").get_value<int>();
+            int victoriesAmount = data.get_child(L"victoriesAmount").get_value<int>();
 
-            Models::User::Info info = Info(name, money, tanks);
+            Models::User::Info info = Info(email, name, money, battlesAmount, victoriesAmount);
 
             return Models::DataActionResult<Models::User::Info>(Models::ErrorCode::OK, info);
         }
 
         Models::DataActionResult<Models::User::SignInInfo> signIn(std::wstring email, std::wstring password) override
         {
-            // HttpRequest request = HttpRequest(L"/api/v1/user/signIn", HttpRequestType::POST, L"", {});
+            std::map<std::wstring, std::wstring> requestBodyMap;
+            requestBodyMap[L"email"] = email;
+            requestBodyMap[L"password"] = password;
 
-            // Models::DataActionResult<boost::property_tree::wptree> ptreeResult = processRequest(request);
+            std::wstring requestBody = this->toJson(requestBodyMap);
+            HttpRequest request = HttpRequest(L"/api/v1/user/signIn", HttpRequestType::POST, requestBody, {{DAL::Models::HeaderType::CONTENT_TYPE, L"application/json"}});
 
-            // std::wstring name = ptreeResult.getData().get_child(L"name").get_value(L"Unknown");
-            // int money = boost::lexical_cast<int>(ptreeResult.getData().get_child(L"money").get_value(L"-1"));
-            // std::vector<int> tanks = asVector<int>(ptreeResult.getData(), L"tanks");
+            Models::DataActionResult<boost::property_tree::wptree> ptreeResult = processRequest(request);
 
-            SignInInfo info = SignInInfo(L"");
+            std::wstring token;
+            if (ptreeResult.getError() == Models::ErrorCode::OK)
+            {
+                token = ptreeResult.getData().get_child(L"token").get_value<std::wstring>();
+            }
 
-            return Models::DataActionResult<Models::User::SignInInfo>(Models::ErrorCode::OK, info);
+            SignInInfo info = SignInInfo(token);
+
+            return Models::DataActionResult<Models::User::SignInInfo>(ptreeResult.getError(), info);
         }
 
     private:

@@ -33,7 +33,7 @@ namespace T10
 		boost::shared_ptr<DAL::ApiServices::ICommunicationService> communicationService = boost::make_shared<DAL::ApiServices::CommunicationService>();
 
 		boost::shared_ptr<DAL::ApiServices::User::IUserApiService> userApiService = boost::make_shared<DAL::ApiServices::User::UserApiService>(communicationService);
-		boost::shared_ptr<BLL::Services::User::IUserService> userService = boost::make_shared<BLL::Services::User::UserService>(userApiService);
+		boost::shared_ptr<BLL::Services::User::IUserService> userService = boost::make_shared<BLL::Services::User::UserService>(userApiService, communicationService);
 
 		boost::shared_ptr<DAL::ApiServices::Tanks::ITankApiService> tankApiService = boost::make_shared<DAL::ApiServices::Tanks::TankApiService>(communicationService);
 		boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService = boost::make_shared<BLL::Services::Tanks::TankService>(tankApiService);
@@ -53,7 +53,7 @@ namespace T10
 									   tankService,
 									   boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
-		_onSwitchlevelRequested(LevelType::MENU, {});
+		_onSwitchlevelRequested(LevelType::SIGN_IN, {});
 	}
 
 	void Game::finishGame()

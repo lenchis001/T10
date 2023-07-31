@@ -1,9 +1,9 @@
-#ifndef DAL_SIGN_IN_INFO
-#define DAL_SIGN_IN_INFO
+#ifndef BLL_SIGN_IN_INFO
+#define BLL_SIGN_IN_INFO
 
 #include "string"
 
-namespace T10::DAL::Models::User
+namespace T10::BLL::Models::User
 {
     class SignInInfo
     {

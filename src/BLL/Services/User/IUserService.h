@@ -5,6 +5,7 @@
 
 #include "BLL/Models/User/Info.hpp"
 #include "BLL/Models/DataActionResult.h"
+#include "BLL/Models/ActionResult.h"
 
 namespace T10::BLL::Services::User
 {
@@ -12,6 +13,8 @@ namespace T10::BLL::Services::User
     {
     public:
         virtual boost::shared_ptr<Models::DataActionResult<Models::User::Info>> getInfo() = 0;
+
+        virtual Models::ActionResult signIn(std::wstring email, std::wstring password) = 0;
     };
 }
 

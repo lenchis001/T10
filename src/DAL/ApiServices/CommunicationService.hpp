@@ -5,15 +5,6 @@
 
 #include "boost/beast.hpp"
 #include "boost/locale.hpp"
-// #include <boost/beast/core.hpp>
-// #include <boost/beast/http.hpp>
-// #include <boost/beast/version.hpp>
-// #include <boost/asio/connect.hpp>
-// #include <boost/asio/ip/tcp.hpp>
-// #include "boost/locale.hpp"
-// #include <cstdlib>
-// #include <string>
-// #include "iostream"
 
 namespace beast = boost::beast; // from <boost/beast.hpp>
 namespace http = beast::http;   // from <boost/beast/http.hpp>
@@ -68,9 +59,11 @@ namespace T10::DAL::ApiServices
                 stream.connect(results);
 
                 // Set up an HTTP GET request message
-                http::request<http::string_body> req{toHttpVerb(request.getType()), target, version, TO_STRING(request.getBody())};
+                std::string body = TO_STRING(request.getBody());
+                http::request<http::string_body> req{toHttpVerb(request.getType()), target, version, body};
                 req.set(http::field::host, host);
                 req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+                _addHeaders(req, request.getHeaders());
 
                 // Send the HTTP request to the remote host
                 http::write(stream, req);
@@ -116,6 +109,33 @@ namespace T10::DAL::ApiServices
                 return Models::HttpResponse<>(-1, L"", {});
             }
         }
+
+        void setAuthentication(std::wstring token)
+        {
+            _token = token;
+        }
+
+        void _addHeaders(http::request<http::string_body> &req, const std::map<HeaderType, std::wstring> &headers)
+        {
+            for (std::pair<HeaderType, std::wstring> header : headers)
+            {
+                switch (header.first)
+                {
+                case HeaderType::CONTENT_TYPE:
+                    req.set(http::field::content_type, TO_STRING(header.second));
+                    break;
+                }
+            }
+
+            req.content_length(req.body().length());
+
+            if(!_token.empty()) {
+                req.set("Authorization", TO_STRING(std::wstring(L"Bearer ") + _token));
+            }
+        }
+
+    private:
+        std::wstring _token;
     };
 }
 

@@ -9,11 +9,18 @@ namespace T10::BLL::Models::User
     class Info
     {
     public:
-        Info(const std::wstring &name, int money, const std::vector<int> &tanks)
+        Info(const std::wstring &email, const std::wstring &name, int money, int battlesAmount, int victoriesAmount)
         {
+            _email = email;
             _name = name;
             _money = money;
-            _tanks = tanks;
+            _battlesAmount = battlesAmount;
+            _victoriesAmount = victoriesAmount;
+        }
+
+        const std::wstring &getEmail() const
+        {
+            return _email;
         }
 
         const std::wstring &getName() const
@@ -26,15 +33,19 @@ namespace T10::BLL::Models::User
             return _money;
         }
 
-        const std::vector<int> &getTanks() const
+        int getBattlesAmount() const
         {
-            return _tanks;
+            return _battlesAmount;
+        }
+
+        int getVictoriesAmount() const
+        {
+            return _victoriesAmount;
         }
 
     private:
-        std::wstring _name;
-        int _money;
-        std::vector<int> _tanks;
+        std::wstring _name, _email;
+        int _money, _battlesAmount, _victoriesAmount;
     };
 }
 

@@ -4,9 +4,12 @@
 #include "boost/smart_ptr.hpp"
 #include "boost/property_tree/ptree.hpp"
 #include "boost/property_tree/json_parser.hpp"
+#include<boost/algorithm/string.hpp>
 
 #include "DAL/Models/DataActionResult.h"
 #include "DAL/ApiServices/ICommunicationService.h"
+
+#include "boost/filesystem.hpp"
 
 namespace T10::DAL::ApiServices
 {
@@ -23,8 +26,15 @@ namespace T10::DAL::ApiServices
         {
             Models::HttpResponse<> response = _communicationService->process(request);
 
-            boost::property_tree::wptree ptreeData = toWPtree(response.getBody());
-            Models::ErrorCode error = toErrorCode(response.getStatusCode());
+            int statusCode = response.getStatusCode();
+
+            boost::property_tree::wptree ptreeData;
+            if (statusCode < 300 && statusCode > 199)
+            {
+                ptreeData = toWPtree(response.getBody());
+            }
+
+            Models::ErrorCode error = toErrorCode(statusCode);
 
             return Models::DataActionResult<boost::property_tree::wptree>(error, ptreeData);
         }
@@ -38,17 +48,22 @@ namespace T10::DAL::ApiServices
             return r;
         }
 
-        std::wstring toJson(std::map<std::wstring, std::wstring> map) {
+        std::wstring toJson(std::map<std::wstring, std::wstring> map)
+        {
             boost::property_tree::wptree wptree;
 
-            for(std::pair<std::wstring, std::wstring> pair : map) {
+            for (std::pair<std::wstring, std::wstring> pair : map)
+            {
                 wptree.add(pair.first, pair.second);
             }
 
             std::wstringstream wss;
-            boost::property_tree::json_parser::write_json(wss, wptree);
-            
-            return wss.str(); 
+            boost::property_tree::json_parser::write_json(wss, wptree, false);
+
+            std::wstring result;
+            wss>>result;
+
+            return result;
         }
 
     private:
