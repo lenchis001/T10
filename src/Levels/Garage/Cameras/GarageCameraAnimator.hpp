@@ -12,9 +12,9 @@ namespace T10::Levels::Garage::Cameras
 	public:
 		GarageCameraAnimator(
 			irr::core::vector3df target,
-			float minDistance = 6,
-			float distance = 10,
-			float maxDistance = 15,
+			float minDistance = 4,
+			float distance = 5,
+			float maxDistance = 6,
 			float minTheta = 0.6F,
 			float maxTheta = irr::core::HALF_PI - 0.2,
 			int sensitivity = 300,
@@ -38,6 +38,7 @@ namespace T10::Levels::Garage::Cameras
 			_recalculatePosition();
 			_isTargetUpdated = false;
 			_isCameraUpdateRequired = true;
+			_isInitialized = false;
 
 			// It means that start point is not set yet
 			_previousMousePoint.X = -1;
@@ -65,7 +66,7 @@ namespace T10::Levels::Garage::Cameras
 
 		void animateNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::u32 timeMs) override
 		{
-			if (!_isCameraUpdateRequired)
+			if (!_isCameraUpdateRequired && _isInitialized)
 			{
 				// no updates requires, don't do useless job
 				return;
@@ -82,6 +83,7 @@ namespace T10::Levels::Garage::Cameras
 			camera->setPosition(_position);
 
 			_isCameraUpdateRequired = false;
+			_isInitialized = true;
 		}
 
 		bool isEventReceiverEnabled() const override
@@ -164,7 +166,7 @@ namespace T10::Levels::Garage::Cameras
 		irr::core::vector2di _previousMousePoint;
 		irr::core::vector3df _target, _position;
 		float _minDistance, _distance, _maxDistance, _phi, _theta, _minTheta, _maxTheta;
-		bool _isTargetUpdated, _isCameraUpdateRequired;
+		bool _isTargetUpdated, _isCameraUpdateRequired, _isInitialized;
 	};
 }
 

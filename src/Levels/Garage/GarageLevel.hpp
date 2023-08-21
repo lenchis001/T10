@@ -67,7 +67,7 @@ namespace T10::Levels::Garage
 				{
 					if (event.GUIEvent.Caller->getID() == TANKS_LIST_CONTROL)
 					{
-
+						_onTankSelected();
 						return true;
 					}
 
@@ -83,6 +83,8 @@ namespace T10::Levels::Garage
 
 	private:
 		boost::shared_ptr<irr::gui::IGUIListBox> _tanksList;
+		std::vector<BLL::Models::Tanks::Tank> _usersTanks;
+		int _selectedTankIndex = -1;
 
 		boost::shared_ptr<BLL::Services::User::IUserService> _userService;
 		boost::shared_ptr<BLL::Services::Tanks::ITankService> _tankService;
@@ -122,12 +124,13 @@ namespace T10::Levels::Garage
 				[&]()
 				{
 					boost::shared_ptr<BLL::Models::DataActionResult<std::vector<BLL::Models::Tanks::Tank>>> allTank = _tankService->getAll();
+					_usersTanks = allTank->getData();
 
 					_functionsProcessingAware->addFuctionToQueue(
 						ThreadTypes::RENDER_THREAD,
-						[&, allTank]()
+						[&]()
 						{
-							for (const BLL::Models::Tanks::Tank tank : allTank->getData())
+							for (const BLL::Models::Tanks::Tank tank : _usersTanks = _usersTanks)
 							{
 								_tanksList->addItem(tank.getName().c_str());
 							}
@@ -142,8 +145,6 @@ namespace T10::Levels::Garage
 
 			_sceneManager->addCameraSceneNode()->addAnimator(
 				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(irr::core::vector3df(0, 0, 0), 10));
-
-			_sceneManager->addCubeSceneNode(5, 0, -1, {0, 0, 0});
 		}
 
 		void _goToBattle()
@@ -157,7 +158,14 @@ namespace T10::Levels::Garage
 
 		void _onTankSelected()
 		{
-			irr::s32 selectedTankIndex = _tanksList->getSelected();
+			_selectedTankIndex = _tanksList->getSelected();
+
+			auto tank = _usersTanks[_selectedTankIndex];
+
+			auto modelPath = std::wstring(L"Resources/Models/Tanks/") + tank.getName() + std::wstring(L"/Tank.obj");
+
+			auto mesh = _sceneManager->getMesh(modelPath.c_str());
+			_sceneManager->addMeshSceneNode(mesh);
 		}
 	};
 }
