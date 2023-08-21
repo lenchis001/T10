@@ -21,7 +21,7 @@ add_compile_definitions(${Game_DEFINITIONS})
 include_directories("include" "src")
 
 file(GLOB_RECURSE game_sources_files "*.cpp")
-add_library(Game SHARED ${game_sources_files} "src/BLL/Services/Storage/IStorageService.h")
+add_library(Game SHARED ${game_sources_files})
 
 if(MSVC)
     if(NOT EXISTS ${CMAKE_BINARY_DIR}/packages/boost)

@@ -67,7 +67,6 @@ namespace T10::Levels::Garage
 				{
 					if (event.GUIEvent.Caller->getID() == TANKS_LIST_CONTROL)
 					{
-						std::cout << "A tank selected" << std::endl;
 
 						return true;
 					}
@@ -142,7 +141,9 @@ namespace T10::Levels::Garage
 			_loadScene(path);
 
 			_sceneManager->addCameraSceneNode()->addAnimator(
-				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(irr::core::vector3df(0, 2, 0), 10));
+				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(irr::core::vector3df(0, 0, 0), 10));
+
+			_sceneManager->addCubeSceneNode(5, 0, -1, {0, 0, 0});
 		}
 
 		void _goToBattle()
