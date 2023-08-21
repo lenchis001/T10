@@ -4,12 +4,11 @@
 #include "boost/smart_ptr.hpp"
 #include "boost/property_tree/ptree.hpp"
 #include "boost/property_tree/json_parser.hpp"
-#include<boost/algorithm/string.hpp>
+#include <boost/algorithm/string.hpp>
+#include "boost/filesystem.hpp"
 
 #include "DAL/Models/DataActionResult.h"
 #include "DAL/ApiServices/ICommunicationService.h"
-
-#include "boost/filesystem.hpp"
 
 namespace T10::DAL::ApiServices
 {
@@ -29,7 +28,7 @@ namespace T10::DAL::ApiServices
             int statusCode = response.getStatusCode();
 
             boost::property_tree::wptree ptreeData;
-            if (statusCode < 300 && statusCode > 199)
+            if (statusCode < 300 && statusCode > 199 && !response.getBody().empty())
             {
                 ptreeData = toWPtree(response.getBody());
             }

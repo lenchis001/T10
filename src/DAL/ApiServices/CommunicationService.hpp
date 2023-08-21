@@ -1,10 +1,10 @@
 #ifndef COMMUNICATION_SERVICE
 #define COMMUNICATION_SERVICE
 
-#include "ICommunicationService.h"
-
 #include "boost/beast.hpp"
 #include "boost/locale.hpp"
+
+#include "ICommunicationService.h"
 
 namespace beast = boost::beast; // from <boost/beast.hpp>
 namespace http = beast::http;   // from <boost/beast/http.hpp>
@@ -20,7 +20,7 @@ namespace T10::DAL::ApiServices
     {
         switch (requestType)
         {
-        case Models::HttpRequestType::DELETE:
+        case Models::HttpRequestType::DELETE_T:
             return http::verb::delete_;
         case Models::HttpRequestType::GET:
             return http::verb::get;

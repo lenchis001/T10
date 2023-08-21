@@ -64,6 +64,14 @@ namespace T10::DAL::ApiServices::User
             return Models::DataActionResult<Models::User::SignInInfo>(ptreeResult.getError(), info);
         }
 
+        virtual Models::ActionResult isSignedIn() {
+            HttpRequest request = HttpRequest(L"/api/v1/user/isSignedIn", HttpRequestType::GET, L"", {});
+
+            auto ptreeResult = processRequest(request);
+
+            return Models::ActionResult(ptreeResult.getError());
+        }
+
     private:
         boost::shared_ptr<ICommunicationService> _communicationService;
     };

@@ -9,6 +9,9 @@
 
 #include "DAL/ApiServices/User/IUserApiService.h"
 #include "DAL/ApiServices/ICommunicationService.h"
+#include "DAL/Services/IStorageService.h"
+
+#define TOKEN_STORAGE_KEY L"token"
 
 namespace T10::BLL::Services::User
 {
@@ -17,10 +20,12 @@ namespace T10::BLL::Services::User
     public:
         UserService(
             boost::shared_ptr<DAL::ApiServices::User::IUserApiService> userApiService,
-            boost::shared_ptr<DAL::ApiServices::ICommunicationService> communicationService)
+            boost::shared_ptr<DAL::ApiServices::ICommunicationService> communicationService,
+            boost::shared_ptr<DAL::Services::IStorageService> storageService)
         {
             _userApiService = userApiService;
             _communicationService = communicationService;
+            _storageService = storageService;
         }
 
         boost::shared_ptr<Models::DataActionResult<Models::User::Info>> getInfo() override
@@ -43,15 +48,37 @@ namespace T10::BLL::Services::User
             {
                 Models::User::SignInInfo signInInfo = _toBllSignInInfo(dalSignInInfoResult.getData());
 
-                _communicationService->setAuthentication(signInInfo.getToken());
+                auto token = signInInfo.getToken();
+                _storageService->set(TOKEN_STORAGE_KEY, token);
+                _communicationService->setAuthentication(token);
             }
 
-            return Models::ActionResult(Models::ErrorCode::OK);
+            return Models::ActionResult(bllErrorCode);
         }
 
+        virtual Models::ActionResult signIn() {
+            auto token = _storageService->get(TOKEN_STORAGE_KEY);
+
+            if (token.empty()) {
+                return Models::ActionResult(Models::ErrorCode::UNKNOWN);
+            }
+
+            _communicationService->setAuthentication(token);
+
+            auto dalResult = _userApiService->isSignedIn();
+
+            auto result = Models::ActionResult(_toBllErrorCode(dalResult.getError()));
+
+            if (result.getError() != BLL::Models::ErrorCode::OK) {
+                _communicationService->setAuthentication(L"");
+            }
+
+            return result;
+        }
     private:
         boost::shared_ptr<DAL::ApiServices::User::IUserApiService> _userApiService;
         boost::shared_ptr<DAL::ApiServices::ICommunicationService> _communicationService;
+        boost::shared_ptr<DAL::Services::IStorageService> _storageService;
 
         inline Models::User::Info _toBllUserInfo(const DAL::Models::User::Info &dalUserInfo)
         {

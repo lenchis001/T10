@@ -1,7 +1,7 @@
 #ifndef __SCENE_MANAGER_AWARE__
 #define __SCENE_MANAGER_AWARE__
 
-#include "boost/smart_ptr.hpp"
+#include "IReferenceCounted.h"
 
 namespace irr::scene {
 	class ISceneManager;

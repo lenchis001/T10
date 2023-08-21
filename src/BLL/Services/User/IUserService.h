@@ -15,6 +15,8 @@ namespace T10::BLL::Services::User
         virtual boost::shared_ptr<Models::DataActionResult<Models::User::Info>> getInfo() = 0;
 
         virtual Models::ActionResult signIn(std::wstring email, std::wstring password) = 0;
+
+        virtual Models::ActionResult signIn() = 0;
     };
 }
 

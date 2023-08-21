@@ -3,23 +3,23 @@
 
 #include "iostream"
 
-#include "Levels/BaseLevel.hpp"
-
 #include "boost/smart_ptr.hpp"
 #include "boost/function.hpp"
+
+#include "Levels/BaseLevel.hpp"
 
 #include "BLL/Services/User/IUserService.h"
 #include "BLL/Services/Tank/ITankService.h"
 
 #include "Cameras/GarageCameraAnimator.hpp"
 
-#define TANKS_LIST_CONTROL 1
-#define GO_TO_BATTLE_CONTROL 2
-#define USER_NAME_CONTROL 3
-#define MONEY_VALUE_CONTROL 4
-
 namespace T10::Levels::Garage
 {
+	#define TANKS_LIST_CONTROL 1
+	#define GO_TO_BATTLE_CONTROL 2
+	#define USER_NAME_CONTROL 3
+	#define MONEY_VALUE_CONTROL 4
+
 	class GarageLevel : public BaseLevel, public boost::enable_shared_from_this<ILevel>
 	{
 	public:

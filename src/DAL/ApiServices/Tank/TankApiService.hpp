@@ -34,7 +34,7 @@ namespace T10::DAL::ApiServices::Tanks
                     auto name = item.second.get_child(L"name").get_value(L"Unknown");
                     auto price = boost::lexical_cast<int>(item.second.get_child(L"price").get_value(L"-1"));
                     auto maxSpeed = boost::lexical_cast<int>(item.second.get_child(L"maxSpeed").get_value(L"-1"));
-                    auto acceleration = boost::lexical_cast<int>(item.second.get_child(L"acceleration").get_value(L"-1"));
+                    auto acceleration = boost::lexical_cast<float>(item.second.get_child(L"acceleration").get_value(L"-1"));
                     auto healthPoints = boost::lexical_cast<int>(item.second.get_child(L"healthPoints").get_value(L"-1"));
                     auto damage = boost::lexical_cast<int>(item.second.get_child(L"damage").get_value(L"-1"));
 

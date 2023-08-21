@@ -4,10 +4,10 @@
 #include "string"
 #include "map"
 
-#include "irrlicht.h"
-
 #include "boost/function.hpp"
 #include "boost/type_traits.hpp"
+
+#include "irrlicht.h"
 
 #include "LevelType.h"
 

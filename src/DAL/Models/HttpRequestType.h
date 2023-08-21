@@ -8,7 +8,8 @@ namespace T10::DAL::Models
         GET,
         POST,
         PUT,
-        DELETE
+        // If we use DELETE, It will conflict with DELETE macro from Win32 API
+        DELETE_T
     };
 }
 

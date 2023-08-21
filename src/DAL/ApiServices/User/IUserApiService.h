@@ -15,6 +15,8 @@ namespace T10::DAL::ApiServices::User
         virtual Models::DataActionResult<Models::User::Info> getInfo() = 0;
 
         virtual Models::DataActionResult<Models::User::SignInInfo> signIn(std::wstring email, std::wstring password) = 0;
+
+        virtual Models::ActionResult isSignedIn() = 0;
     };
 }
 
