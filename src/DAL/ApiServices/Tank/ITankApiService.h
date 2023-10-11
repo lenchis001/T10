@@ -6,6 +6,7 @@
 #include "boost/smart_ptr.hpp"
 
 #include "DAL/Models/Tanks/Tank.hpp"
+#include "DAL/Models/Tanks/TankAssignment.hpp"
 #include "DAL/Models/DataActionResult.h"
 
 namespace T10::DAL::ApiServices::Tanks
@@ -14,6 +15,8 @@ namespace T10::DAL::ApiServices::Tanks
     {
     public:
         virtual boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::Tank>>> getAll() = 0;
+
+        virtual boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::TankAssignment>>> getMy() = 0;
     };
 }
 
