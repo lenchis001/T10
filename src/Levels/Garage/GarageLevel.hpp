@@ -17,13 +17,13 @@
 
 namespace T10::Levels::Garage
 {
-	#define TANKS_LIST_CONTROL 1
-	#define GO_TO_BATTLE_CONTROL 2
-	#define USER_NAME_CONTROL 3
-	#define MONEY_VALUE_CONTROL 4
-	#define BUY_TANK_CONTROL 5
-	#define BUY_TANK_DIALOG_CONTROL 6
-	#define GARAGE_UI 7
+#define TANKS_LIST_CONTROL 1
+#define GO_TO_BATTLE_CONTROL 2
+#define USER_NAME_CONTROL 3
+#define MONEY_VALUE_CONTROL 4
+#define BUY_TANK_CONTROL 5
+#define BUY_TANK_DIALOG_CONTROL 6
+#define GARAGE_UI 7
 
 	class GarageLevel : public BaseLevel, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
 	{
@@ -34,9 +34,8 @@ namespace T10::Levels::Garage
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
 			boost::shared_ptr<BLL::Services::User::IUserService> userService,
 			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
-			SwitchLevelCallbackFunction switchLevelCallback) : 
-			BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
-			Mixins::LoadingSplashAwareMixin(guiEnvironment)
+			SwitchLevelCallbackFunction switchLevelCallback) : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
+															   Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_userService = userService;
 			_tankService = tankService;
@@ -61,7 +60,7 @@ namespace T10::Levels::Garage
 				case irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
 				{
 					boost::shared_ptr<irr::gui::IGUIButton> button = boost::static_pointer_cast<irr::gui::IGUIButton>(event.GUIEvent.Caller);
-					
+
 					switch (event.GUIEvent.Caller->getID())
 					{
 					case GO_TO_BATTLE_CONTROL:
@@ -90,7 +89,6 @@ namespace T10::Levels::Garage
 				}
 				case irr::gui::EGUI_EVENT_TYPE::EGET_ELEMENT_CLOSED:
 				{
-
 					if (event.GUIEvent.Caller->getID() == BUY_TANK_DIALOG_CONTROL)
 					{
 						_unlockGarageGui();
@@ -100,17 +98,18 @@ namespace T10::Levels::Garage
 					break;
 				}
 				default:
-					return false;
+					break;
 				}
 			}
 
-			return false;
+			return BaseLevel::OnEvent(event);
 		}
 
 	private:
 		boost::shared_ptr<irr::gui::IGUIElement> _garageGui;
 		boost::shared_ptr<irr::gui::IGUIListBox> _tanksList;
-		std::vector<BLL::Models::Tanks::Tank> _usersTanks;
+		std::vector<BLL::Models::Tanks::Tank> _allTanks;
+		std::vector<BLL::Models::Tanks::TankAssignment>> _myTanks;
 		int _selectedTankIndex = -1;
 
 		boost::shared_ptr<BLL::Services::User::IUserService> _userService;
@@ -136,8 +135,23 @@ namespace T10::Levels::Garage
 					boost::shared_ptr<BLL::Models::DataActionResult<BLL::Models::User::Info>> userInfo = _userService->getInfo();
 
 					boost::shared_ptr<BLL::Models::DataActionResult<std::vector<BLL::Models::Tanks::Tank>>> allTank = _tankService->getAll();
+					if (!allTank->isOk())
+					{
+						std::wstring message(L"Cannot get tanks info.");
+
+						_exitWithMessage(message);
+						return;
+					}
+					_allTanks = allTank->getData();
+
 					boost::shared_ptr<BLL::Models::DataActionResult<std::vector<BLL::Models::Tanks::TankAssignment>>> myTanks = _tankService->getMy();
-					_usersTanks = allTank->getData();
+					if (!myTanks->isOk())
+					{
+						std::wstring message(L"Cannot get user's tanks info.");
+
+						_exitWithMessage(message);
+						return;
+					}
 
 					_functionsProcessingAware->addFuctionToQueue(
 						ThreadTypes::RENDER_THREAD,
@@ -153,7 +167,7 @@ namespace T10::Levels::Garage
 							boost::shared_ptr<irr::gui::IGUIStaticText> moneyLabel = boost::static_pointer_cast<irr::gui::IGUIStaticText>(element);
 							moneyLabel->setText(std::to_wstring(userInfo->getData().getMoney()).c_str());
 
-							for (const BLL::Models::Tanks::Tank tank : _usersTanks)
+							for (const BLL::Models::Tanks::Tank tank : _allTanks)
 							{
 								_tanksList->addItem(tank.getName().c_str());
 							}
@@ -185,7 +199,7 @@ namespace T10::Levels::Garage
 		{
 			_selectedTankIndex = _tanksList->getSelected();
 
-			auto tank = _usersTanks[_selectedTankIndex];
+			auto tank = _allTanks[_selectedTankIndex];
 
 			auto modelPath = std::wstring(L"Resources/Models/Tanks/") + tank.getName() + std::wstring(L"/Tank.obj");
 
@@ -193,7 +207,8 @@ namespace T10::Levels::Garage
 			_sceneManager->addMeshSceneNode(mesh);
 		}
 
-		void _showTanksBuyDialog() {
+		void _showTanksBuyDialog()
+		{
 			_lockGarageGui();
 
 			_showLoadingSpalsh();
@@ -201,24 +216,25 @@ namespace T10::Levels::Garage
 			std::wstring path = L"Resources/Levels/Garage/GUI/TankBuy.xml";
 			_loadGui(path);
 
-			_functionsProcessingAware->addFuctionToQueue(
-				ThreadTypes::THREAD_POOL,
-				[&, rootGuiElement]()
-				{
+			// _functionsProcessingAware->addFuctionToQueue(
+			// 	ThreadTypes::THREAD_POOL,
+			// 	[&, rootGuiElement]()
+			// 	{
 
-				})
-
+			// 	});
 
 			_hideLoadingSpalsh();
 		}
 
-		void _lockGarageGui() {
+		void _lockGarageGui()
+		{
 			_garageGui->setVisible(false);
 
 			_tankService->getAll();
 		}
 
-		void _unlockGarageGui() {
+		void _unlockGarageGui()
+		{
 			_garageGui->setVisible(true);
 		}
 	};

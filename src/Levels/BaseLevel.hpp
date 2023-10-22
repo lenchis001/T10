@@ -19,6 +19,8 @@ using namespace std;
 
 namespace T10::Levels
 {
+#define EXIT_GAME_MESSAGE 10001
+
 	class BaseLevel : public ILevel
 	{
 	public:
@@ -35,11 +37,24 @@ namespace T10::Levels
 		{
 		}
 
-		virtual void onLoadRequested() = 0;
-		virtual void onUnloadRequested() = 0;
-
 		bool OnEvent(const irr::SEvent &event) override
 		{
+			if (event.EventType == irr::EEVENT_TYPE::EET_GUI_EVENT)
+			{
+				switch (event.GUIEvent.EventType)
+				{
+					case irr::gui::EGUI_EVENT_TYPE::EGET_MESSAGEBOX_OK:
+					{
+						if (event.GUIEvent.Caller->getID() == EXIT_GAME_MESSAGE)
+						{
+							exit(EXIT_GAME_MESSAGE);
+						}
+					}
+					default:
+						return false;
+				}
+			}
+
 			return false;
 		}
 
@@ -58,6 +73,7 @@ namespace T10::Levels
 
 			_unpatchWorkingDirectory();
 		}
+
 		void _loadGui(std::wstring &path)
 		{
 			auto absolutePath = boost::filesystem::absolute(path);
@@ -66,6 +82,13 @@ namespace T10::Levels
 			_guiEnvironment->loadGUI(absolutePath.c_str());
 
 			_unpatchWorkingDirectory();
+		}
+
+		void _exitWithMessage(std::wstring &message)
+		{
+			_guiEnvironment->clear();
+
+			_guiEnvironment->addMessageBox(L"Message", message.c_str(), true, 1, nullptr, EXIT_GAME_MESSAGE);
 		}
 
 		boost::shared_ptr<irr::scene::ISceneManager> _sceneManager;
@@ -81,7 +104,7 @@ namespace T10::Levels
 
 			boost::filesystem::current_path(levelFileDirectory);
 		}
-		
+
 		void _unpatchWorkingDirectory()
 		{
 			boost::filesystem::current_path(_workingDirectoryBuffer.c_str());

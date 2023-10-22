@@ -18,6 +18,10 @@ namespace T10::BLL::Models
             return _error;
         }
 
+        bool isOk() {
+            return _error == ErrorCode::OK;
+        }
+
     private:
         ErrorCode _error;
     };

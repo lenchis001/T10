@@ -142,6 +142,10 @@ typedef unsigned short wchar_t;
 #endif // microsoft compiler
 #endif // _IRR_WINDOWS_API_
 
+#ifdef _IRR_OSX_PLATFORM_
+#define _snprintf snprintf
+#endif // _IRR_OSX_PLATFORM_
+
 namespace irr
 {
 
