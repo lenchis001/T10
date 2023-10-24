@@ -109,7 +109,7 @@ namespace T10::Levels::Garage
 		boost::shared_ptr<irr::gui::IGUIElement> _garageGui;
 		boost::shared_ptr<irr::gui::IGUIListBox> _tanksList;
 		std::vector<BLL::Models::Tanks::Tank> _allTanks;
-		std::vector<BLL::Models::Tanks::TankAssignment>> _myTanks;
+		std::vector<BLL::Models::TankAssignments::TankAssignment> _myTanks;
 		int _selectedTankIndex = -1;
 
 		boost::shared_ptr<BLL::Services::User::IUserService> _userService;
@@ -144,7 +144,7 @@ namespace T10::Levels::Garage
 					}
 					_allTanks = allTank->getData();
 
-					boost::shared_ptr<BLL::Models::DataActionResult<std::vector<BLL::Models::Tanks::TankAssignment>>> myTanks = _tankService->getMy();
+					boost::shared_ptr<BLL::Models::DataActionResult<std::vector<BLL::Models::TankAssignments::TankAssignment>>> myTanks = _tankService->getMy();
 					if (!myTanks->isOk())
 					{
 						std::wstring message(L"Cannot get user's tanks info.");
@@ -169,7 +169,11 @@ namespace T10::Levels::Garage
 
 							for (const BLL::Models::Tanks::Tank tank : _allTanks)
 							{
-								_tanksList->addItem(tank.getName().c_str());
+								if (std::find_if(_myTanks.begin(), _myTanks.end(), [&](auto t)
+												 { return t.getId() == tank.getId(); }) != _myTanks.end())
+								{
+									_tanksList->addItem(tank.getName().c_str());
+								}
 							}
 
 							_hideLoadingSpalsh();

@@ -26,14 +26,14 @@ namespace T10::BLL::Services::Tanks
             return boost::make_shared<Models::DataActionResult<std::vector<Models::Tanks::Tank>>>(bllErrorCode, bllTanks);
         }
 
-        boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::TankAssignment>>> getMy()
+        boost::shared_ptr<Models::DataActionResult<std::vector<Models::TankAssignments::TankAssignment>>> getMy()
         {
-            boost::shared_ptr<DAL::Models::DataActionResult<std::vector<DAL::Models::Tanks::TankAssignment>>> dalTankResult = _tankApiService->getMy();
+            boost::shared_ptr<DAL::Models::DataActionResult<std::vector<DAL::Models::TankAssignments::TankAssignment>>> dalTankResult = _tankApiService->getMy();
 
             Models::ErrorCode bllErrorCode = _toBllErrorCode(dalTankResult->getError());
-            std::vector<Models::Tanks::TankAssignment> bllTanks = _toBllTankAssignments(dalTankResult->getData());
+            std::vector<Models::TankAssignments::TankAssignment> bllTanks = _toBllTankAssignments(dalTankResult->getData());
 
-            return boost::make_shared<Models::DataActionResult<std::vector<Models::Tanks::TankAssignment>>>(bllErrorCode, bllTanks);
+            return boost::make_shared<Models::DataActionResult<std::vector<Models::TankAssignments::TankAssignment>>>(bllErrorCode, bllTanks);
         }
 
     private:
@@ -51,13 +51,13 @@ namespace T10::BLL::Services::Tanks
             return tanks;
         }
 
-        std::vector<Models::Tanks::TankAssignment> _toBllTankAssignments(const std::vector<DAL::Models::Tanks::TankAssignment>& dalTankAssignmentss)
+        std::vector<Models::TankAssignments::TankAssignment> _toBllTankAssignments(const std::vector<DAL::Models::TankAssignments::TankAssignment>& dalTankAssignmentss)
         {
-            std::vector<Models::Tanks::TankAssignment> tankAssignments;
+            std::vector<Models::TankAssignments::TankAssignment> tankAssignments;
 
-            for (const DAL::Models::Tanks::TankAssignment& dalTankAssignment : dalTankAssignmentss)
+            for (const DAL::Models::TankAssignments::TankAssignment& dalTankAssignment : dalTankAssignmentss)
             {
-                tankAssignments.push_back(Models::Tanks::TankAssignment(dalTankAssignment.getId(), dalTankAssignment.getTankId()));
+                tankAssignments.push_back(Models::TankAssignments::TankAssignment(dalTankAssignment.getId(), dalTankAssignment.getTankId()));
             }
 
             return tankAssignments;

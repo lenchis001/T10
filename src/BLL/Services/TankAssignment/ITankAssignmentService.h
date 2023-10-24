@@ -1,17 +1,16 @@
-#ifndef ITANK_API_SERVICE
-#define ITANK_API_SERVICE
+#ifndef ITANK_ASSIGNMENT_SERVICE
+#define ITANK_ASSIGNMENT_SERVICE
 
 #include "vector"
 
 #include "boost/smart_ptr.hpp"
 
-#include "DAL/Models/Tanks/Tank.hpp"
-#include "DAL/Models/TankAssignments/TankAssignment.hpp"
-#include "DAL/Models/DataActionResult.h"
+#include "BLL/Models/TankAssignments/TankAssignment.hpp"
+#include "BLL/Models/DataActionResult.h"
 
-namespace T10::DAL::ApiServices::Tanks
+namespace T10::BLL::Services::Tanks
 {
-    class ITankApiService
+    class ITankService
     {
     public:
         virtual boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::Tank>>> getAll() = 0;

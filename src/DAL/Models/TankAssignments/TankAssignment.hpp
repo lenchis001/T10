@@ -1,10 +1,9 @@
-#ifndef BLL_TANK_ASSIGNMENT
-#define BLL_TANK_ASSIGNMENT
+#ifndef DAL_TANK_ASSIGNMENT
+#define DAL_TANK_ASSIGNMENT
 
 #include "string"
-#include "vector"
 
-namespace T10::BLL::Models::Tanks
+namespace T10::DAL::Models::TankAssignments
 {
     class TankAssignment
     {

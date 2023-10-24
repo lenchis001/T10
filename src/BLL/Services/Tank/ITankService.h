@@ -6,7 +6,7 @@
 #include "boost/smart_ptr.hpp"
 
 #include "BLL/Models/Tanks/Tank.hpp"
-#include "BLL/Models/Tanks/TankAssignment.hpp"
+#include "BLL/Models/TankAssignments/TankAssignment.hpp"
 #include "BLL/Models/DataActionResult.h"
 
 namespace T10::BLL::Services::Tanks
@@ -16,7 +16,7 @@ namespace T10::BLL::Services::Tanks
     public:
         virtual boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::Tank>>> getAll() = 0;
 
-        virtual boost::shared_ptr<Models::DataActionResult<std::vector<Models::Tanks::TankAssignment>>> getMy() = 0;
+        virtual boost::shared_ptr<Models::DataActionResult<std::vector<Models::TankAssignments::TankAssignment>>> getMy() = 0;
     };
 }
 
