@@ -15,6 +15,8 @@
 
 #include "Cameras/GarageCameraAnimator.hpp"
 
+#include "Levels/Garage/BuyTankDialogController.hpp"
+
 namespace T10::Levels::Garage
 {
 #define TANKS_LIST_CONTROL 1
@@ -22,7 +24,6 @@ namespace T10::Levels::Garage
 #define USER_NAME_CONTROL 3
 #define MONEY_VALUE_CONTROL 4
 #define BUY_TANK_CONTROL 5
-#define BUY_TANK_DIALOG_CONTROL 6
 #define GARAGE_UI 7
 
 	class GarageLevel : public BaseLevel, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
@@ -34,11 +35,14 @@ namespace T10::Levels::Garage
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
 			boost::shared_ptr<BLL::Services::User::IUserService> userService,
 			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
+			boost::shared_ptr<BuyTankDialogController> buyTankDialogController,
 			SwitchLevelCallbackFunction switchLevelCallback) : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
 															   Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_userService = userService;
 			_tankService = tankService;
+
+			_buyTankDialogController = buyTankDialogController;
 		}
 
 		void onLoadRequested() override
@@ -53,6 +57,10 @@ namespace T10::Levels::Garage
 
 		bool OnEvent(const irr::SEvent &event) override
 		{
+			if(_buyTankDialogController->OnEvent(event)) {
+				return true;
+			}
+
 			if (event.EventType == irr::EEVENT_TYPE::EET_GUI_EVENT)
 			{
 				switch (event.GUIEvent.EventType)
@@ -87,16 +95,6 @@ namespace T10::Levels::Garage
 
 					break;
 				}
-				case irr::gui::EGUI_EVENT_TYPE::EGET_ELEMENT_CLOSED:
-				{
-					if (event.GUIEvent.Caller->getID() == BUY_TANK_DIALOG_CONTROL)
-					{
-						_unlockGarageGui();
-						break;
-					}
-
-					break;
-				}
 				default:
 					break;
 				}
@@ -114,6 +112,8 @@ namespace T10::Levels::Garage
 
 		boost::shared_ptr<BLL::Services::User::IUserService> _userService;
 		boost::shared_ptr<BLL::Services::Tanks::ITankService> _tankService;
+
+		boost::shared_ptr<BuyTankDialogController> _buyTankDialogController;
 
 		void _createUi()
 		{
@@ -152,6 +152,7 @@ namespace T10::Levels::Garage
 						_exitWithMessage(message);
 						return;
 					}
+					_myTanks = myTanks->getData();
 
 					_functionsProcessingAware->addFuctionToQueue(
 						ThreadTypes::RENDER_THREAD,
@@ -219,13 +220,7 @@ namespace T10::Levels::Garage
 
 			std::wstring path = L"Resources/Levels/Garage/GUI/TankBuy.xml";
 			_loadGui(path);
-
-			// _functionsProcessingAware->addFuctionToQueue(
-			// 	ThreadTypes::THREAD_POOL,
-			// 	[&, rootGuiElement]()
-			// 	{
-
-			// 	});
+			_buyTankDialogController->show(_allTanks, boost::bind(&GarageLevel::_unlockGarageGui, this));
 
 			_hideLoadingSpalsh();
 		}

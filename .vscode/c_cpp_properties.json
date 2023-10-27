@@ -19,9 +19,10 @@
             "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
-            "name": "macos64",
+            "name": "macos",
             "includePath": [
-                "/Users/Liavontsi_Khachuyeu/Projects/Irrlicht/**",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
                 "${BOOST_ROOT}"
             ],
             "defines": [],
@@ -31,7 +32,6 @@
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "macos-clang-x64",
             "compilerPathInCppPropertiesJson": "/usr/bin/clang",
             "mergeConfigurations": false,
             "browse": {

@@ -47,7 +47,7 @@ namespace T10::DAL::ApiServices::Tanks
 
         boost::shared_ptr<Models::DataActionResult<std::vector<Models::TankAssignments::TankAssignment>>> getMy()
         {
-            HttpRequest request = HttpRequest(L"/api/v1/tankassignments/my", HttpRequestType::GET, L"", {});
+            HttpRequest request = HttpRequest(L"/api/v1/tankassignment", HttpRequestType::GET, L"", {});
 
             DataActionResult<boost::property_tree::wptree> ptreeResult = processRequest(request);
 
