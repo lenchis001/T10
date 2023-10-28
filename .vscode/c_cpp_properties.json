@@ -32,14 +32,7 @@
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "compilerPathInCppPropertiesJson": "/usr/bin/clang",
             "mergeConfigurations": false,
-            "browse": {
-                "path": [
-                    "${workspaceFolder}/**"
-                ],
-                "limitSymbolsToIncludedHeaders": true
-            },
             "configurationProvider": "ms-vscode.cmake-tools"
         },
         {

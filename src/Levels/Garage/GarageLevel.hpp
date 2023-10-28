@@ -15,7 +15,7 @@
 
 #include "Cameras/GarageCameraAnimator.hpp"
 
-#include "Levels/Garage/BuyTankDialogController.hpp"
+#include "Levels/Garage/BuyTankDialogController.h"
 
 namespace T10::Levels::Garage
 {
@@ -106,7 +106,7 @@ namespace T10::Levels::Garage
 	private:
 		boost::shared_ptr<irr::gui::IGUIElement> _garageGui;
 		boost::shared_ptr<irr::gui::IGUIListBox> _tanksList;
-		std::vector<BLL::Models::Tanks::Tank> _allTanks;
+		boost::shared_ptr<const std::vector<BLL::Models::Tanks::Tank>> _allTanks;
 		std::vector<BLL::Models::TankAssignments::TankAssignment> _myTanks;
 		int _selectedTankIndex = -1;
 
@@ -142,7 +142,7 @@ namespace T10::Levels::Garage
 						_exitWithMessage(message);
 						return;
 					}
-					_allTanks = allTank->getData();
+					_allTanks = boost::make_shared<const std::vector<BLL::Models::Tanks::Tank>>(std::move(allTank->getData()));
 
 					boost::shared_ptr<BLL::Models::DataActionResult<std::vector<BLL::Models::TankAssignments::TankAssignment>>> myTanks = _tankService->getMy();
 					if (!myTanks->isOk())
@@ -168,7 +168,7 @@ namespace T10::Levels::Garage
 							boost::shared_ptr<irr::gui::IGUIStaticText> moneyLabel = boost::static_pointer_cast<irr::gui::IGUIStaticText>(element);
 							moneyLabel->setText(std::to_wstring(userInfo->getData().getMoney()).c_str());
 
-							for (const BLL::Models::Tanks::Tank tank : _allTanks)
+							for (const BLL::Models::Tanks::Tank& tank : *_allTanks)
 							{
 								if (std::find_if(_myTanks.begin(), _myTanks.end(), [&](auto t)
 												 { return t.getId() == tank.getId(); }) != _myTanks.end())
@@ -204,7 +204,7 @@ namespace T10::Levels::Garage
 		{
 			_selectedTankIndex = _tanksList->getSelected();
 
-			auto tank = _allTanks[_selectedTankIndex];
+			auto& tank = (*_allTanks)[_selectedTankIndex];
 
 			auto modelPath = std::wstring(L"Resources/Models/Tanks/") + tank.getName() + std::wstring(L"/Tank.obj");
 

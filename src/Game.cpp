@@ -3,14 +3,14 @@
 #include "Levels/Garage/GarageLevel.hpp"
 #include "Levels/SignIn/SignInLevel.hpp"
 
-#include "Levels/Garage/BuyTankDialogController.hpp"
+#include "Levels/Garage/BuyTankDialogController.h"
 
 #include "Game.h"
 
 #include "BLL/Services/User/UserService.hpp"
 #include "DAL/ApiServices/User/UserApiService.hpp"
 
-#include "BLL/Services/Tank/TankService.hpp"
+#include "BLL/Services/Tank/TankService.h"
 #include "DAL/ApiServices/Tank/TankApiService.hpp"
 
 #include "DAL/ApiServices/CommunicationService.hpp"
@@ -42,7 +42,7 @@ namespace T10
 		boost::shared_ptr<BLL::Services::User::IUserService> userService = boost::make_shared<BLL::Services::User::UserService>(userApiService, communicationService, storageService);
 
 		boost::shared_ptr<DAL::ApiServices::Tanks::ITankApiService> tankApiService = boost::make_shared<DAL::ApiServices::Tanks::TankApiService>(communicationService);
-		boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService = boost::make_shared<BLL::Services::Tanks::TankService>(tankApiService);
+		boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService = nullptr;//boost::make_shared<BLL::Services::Tanks::TankService>(tankApiService);
 
 		boost::shared_ptr<Levels::Garage::BuyTankDialogController> buyTankDialogController 
 			= boost::make_shared<Levels::Garage::BuyTankDialogController>(functionsProcessingAware, _guiEnvironment->getRootGUIElement());
