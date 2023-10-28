@@ -15,7 +15,7 @@
 
 #include "Cameras/GarageCameraAnimator.hpp"
 
-#include "Levels/Garage/BuyTankDialogController.h"
+#include "Levels/Garage/BuyTankDialogController.hpp"
 
 namespace T10::Levels::Garage
 {

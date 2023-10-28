@@ -3,14 +3,14 @@
 #include "Levels/Garage/GarageLevel.hpp"
 #include "Levels/SignIn/SignInLevel.hpp"
 
-#include "Levels/Garage/BuyTankDialogController.h"
+#include "Levels/Garage/BuyTankDialogController.hpp"
 
 #include "Game.h"
 
 #include "BLL/Services/User/UserService.hpp"
 #include "DAL/ApiServices/User/UserApiService.hpp"
 
-#include "BLL/Services/Tank/TankService.h"
+#include "BLL/Services/Tank/TankService.hpp"
 #include "DAL/ApiServices/Tank/TankApiService.hpp"
 
 #include "DAL/ApiServices/CommunicationService.hpp"
