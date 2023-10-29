@@ -10,6 +10,8 @@
 #include "DAL/Models/DataActionResult.h"
 #include "DAL/ApiServices/ICommunicationService.h"
 
+#include "DAL/ApiServices/WptreeValueTranslator.hpp"
+
 namespace T10::DAL::ApiServices
 {
     class BaseApiService
@@ -47,20 +49,34 @@ namespace T10::DAL::ApiServices
             return r;
         }
 
-        std::wstring toJson(std::map<std::wstring, std::wstring> map)
+        std::wstring toJson(std::map<std::wstring, boost::any> map)
         {
-            boost::property_tree::wptree wptree;
+            auto result = std::wstring(L"{\n");
 
-            for (std::pair<std::wstring, std::wstring> pair : map)
+            bool isFirstProperty = true;
+            for (const auto& pair : map)
             {
-                wptree.add(pair.first, pair.second);
+                if (!isFirstProperty) {
+                    result += L",\n";
+                }
+                isFirstProperty = false;
+
+                result += L"\"" + pair.first + L"\" : ";
+
+                if (pair.second.type() == BOOST_CORE_TYPEID(int)) {
+                    result += to_wstring(boost::any_cast<int>(pair.second));
+                    continue;
+                }
+
+                if (pair.second.type() == BOOST_CORE_TYPEID(std::wstring)) {
+                    result += boost::any_cast<std::wstring>(pair.second);
+                    continue;
+                }
+
+                throw std::exception("An unknown type to cast.");
             }
 
-            std::wstringstream wss;
-            boost::property_tree::json_parser::write_json(wss, wptree, false);
-
-            std::wstring result;
-            wss>>result;
+            result += L"\n}";
 
             return result;
         }

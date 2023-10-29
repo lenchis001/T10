@@ -45,28 +45,6 @@ namespace T10::DAL::ApiServices::Tanks
             return boost::make_shared<DataActionResult<std::vector<Models::Tanks::Tank>>>(ptreeResult.getError(), tanks);
         }
 
-        boost::shared_ptr<Models::DataActionResult<std::vector<Models::TankAssignments::TankAssignment>>> getMy()
-        {
-            HttpRequest request = HttpRequest(L"/api/v1/tankassignment", HttpRequestType::GET, L"", {});
-
-            DataActionResult<boost::property_tree::wptree> ptreeResult = processRequest(request);
-
-            std::vector<Models::TankAssignments::TankAssignment> assignments;
-
-            if (ptreeResult.getError() == Models::ErrorCode::OK)
-            {
-                for (auto& item : ptreeResult.getData())
-                {
-                    auto id = boost::lexical_cast<int>(item.second.get_child(L"id").get_value(L"-1"));
-                    auto tankId = boost::lexical_cast<int>(item.second.get_child(L"tankId").get_value(L"-1"));
-
-                    assignments.push_back(Models::TankAssignments::TankAssignment(id, tankId));
-                }
-            }
-
-            return boost::make_shared<DataActionResult<std::vector<Models::TankAssignments::TankAssignment>>>(ptreeResult.getError(), assignments);
-        }
-
     private:
         boost::shared_ptr<ICommunicationService> _communicationService;
     };

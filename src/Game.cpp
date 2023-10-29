@@ -13,6 +13,9 @@
 #include "BLL/Services/Tank/TankService.hpp"
 #include "DAL/ApiServices/Tank/TankApiService.hpp"
 
+#include "BLL/Services/TankAssignment/TankAssignmentService.hpp"
+#include "DAL/ApiServices/TankAssignment/TankAssignmentApiService.hpp"
+
 #include "DAL/ApiServices/CommunicationService.hpp"
 
 #include "DAL/Services/StorageService.hpp"
@@ -34,18 +37,21 @@ namespace T10
 		_sceneManager = device->getSceneManager();
 		_guiEnvironment = device->getGUIEnvironment();
 
-		boost::shared_ptr<DAL::ApiServices::ICommunicationService> communicationService = boost::make_shared<DAL::ApiServices::CommunicationService>();
+		auto communicationService = boost::make_shared<DAL::ApiServices::CommunicationService>();
 
-		boost::shared_ptr<DAL::Services::IStorageService> storageService = boost::make_shared<DAL::Services::StorageService>();
+		auto storageService = boost::make_shared<DAL::Services::StorageService>();
 
-		boost::shared_ptr<DAL::ApiServices::User::IUserApiService> userApiService = boost::make_shared<DAL::ApiServices::User::UserApiService>(communicationService);
-		boost::shared_ptr<BLL::Services::User::IUserService> userService = boost::make_shared<BLL::Services::User::UserService>(userApiService, communicationService, storageService);
+		auto userApiService = boost::make_shared<DAL::ApiServices::User::UserApiService>(communicationService);
+		auto userService = boost::make_shared<BLL::Services::User::UserService>(userApiService, communicationService, storageService);
 
-		boost::shared_ptr<DAL::ApiServices::Tanks::ITankApiService> tankApiService = boost::make_shared<DAL::ApiServices::Tanks::TankApiService>(communicationService);
-		boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService = nullptr;//boost::make_shared<BLL::Services::Tanks::TankService>(tankApiService);
+		auto tankApiService = boost::make_shared<DAL::ApiServices::Tanks::TankApiService>(communicationService);
+		auto tankService = boost::make_shared<BLL::Services::Tanks::TankService>(tankApiService);
+
+		auto tankAssignmentApiService = boost::make_shared<DAL::ApiServices::TankAssignment::TankAssignmentApiService>(communicationService);
+		auto tankAssignmentService = boost::make_shared<BLL::Services::TankAssignment::TankAssignmentService>(tankAssignmentApiService);
 
 		boost::shared_ptr<Levels::Garage::BuyTankDialogController> buyTankDialogController 
-			= boost::make_shared<Levels::Garage::BuyTankDialogController>(functionsProcessingAware, _guiEnvironment->getRootGUIElement());
+			= boost::make_shared<Levels::Garage::BuyTankDialogController>(functionsProcessingAware, tankAssignmentService, _guiEnvironment);
 
 		_addLevel(LevelType::SIGN_IN, boost::make_shared<SignIn::SignInLevel>(
 										  _sceneManager,
@@ -60,6 +66,7 @@ namespace T10
 									   functionsProcessingAware,
 									   userService,
 									   tankService,
+									   tankAssignmentService,
 									   buyTankDialogController,
 									   boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 

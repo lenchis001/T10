@@ -11,12 +11,13 @@ namespace T10::BLL::Services
     template <class T>
     class CacheAwareMixin
     {
-    protected:
+    public:
         void clearCache()
         {
             _cachedData = nullptr;
         }
 
+    protected:
         bool AreCachedDataAvailable()
         {
             return _cachedData;

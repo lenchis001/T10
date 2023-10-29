@@ -44,7 +44,7 @@ namespace T10::DAL::ApiServices::User
 
         Models::DataActionResult<Models::User::SignInInfo> signIn(std::wstring email, std::wstring password) override
         {
-            std::map<std::wstring, std::wstring> requestBodyMap;
+            std::map<std::wstring, boost::any> requestBodyMap;
             requestBodyMap[L"email"] = email;
             requestBodyMap[L"password"] = password;
 

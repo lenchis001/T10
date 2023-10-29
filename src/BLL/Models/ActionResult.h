@@ -22,6 +22,10 @@ namespace T10::BLL::Models
             return _error == ErrorCode::OK;
         }
 
+        static ActionResult okResult() {
+            return ActionResult(ErrorCode::OK);
+        }
+
     private:
         ErrorCode _error;
     };
