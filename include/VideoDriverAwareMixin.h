@@ -1,7 +1,7 @@
 #ifndef __VIDEO_DRIVER_AWARE__
 #define __VIDEO_DRIVER_AWARE__
 
-#include "boost/smart_ptr.hpp"
+#include "IReferenceCounted.h"
 
 namespace irr::video {
 	class IVideoDriver;

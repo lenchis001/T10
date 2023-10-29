@@ -7,6 +7,6 @@
 
 using namespace std;
 
-namespace GameLogic {
-	typedef void SwitchLevelCallback(LevelType type, map<wstring, wstring> params);
+namespace T10 {
+	typedef void SwitchLevelCallback(Levels::LevelType type, map<wstring, wstring> params);
 }

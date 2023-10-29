@@ -9,13 +9,14 @@
 #include "Levels/LevelType.h"
 
 using namespace std;
+using namespace T10::Levels;
 
-namespace GameLogic {
+namespace T10 {
 	class Game : public IGame, public irr::IEventReceiver {
 	public:
 		~Game();
 
-		void startGame(boost::shared_ptr<irr::IrrlichtDevice> device) override;
+		void startGame(boost::shared_ptr<irr::IrrlichtDevice> device, boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware) override;
 
 		void finishGame() override;
 
@@ -33,5 +34,5 @@ namespace GameLogic {
 	};
 }
 
-extern "C" BOOST_SYMBOL_EXPORT GameLogic::Game game;
-GameLogic::Game game;
+extern "C" BOOST_SYMBOL_EXPORT T10::Game game;
+T10::Game game;

@@ -3,7 +3,7 @@
 #ifndef __SHARED_THIS_MIXIN__
 #define __SHARED_THIS_MIXIN__
 
-#include "boost/smart_ptr.hpp"
+#include "IReferenceCounted.h"
 
 template<class T> class SharedThisMixin {
 public:

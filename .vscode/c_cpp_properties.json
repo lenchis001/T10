@@ -19,9 +19,10 @@
             "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
-            "name": "macos64",
+            "name": "macos",
             "includePath": [
-                "/Users/Liavontsi_Khachuyeu/Projects/Irrlicht/**",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
                 "${BOOST_ROOT}"
             ],
             "defines": [],
@@ -31,21 +32,18 @@
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "macos-clang-x64",
-            "compilerPathInCppPropertiesJson": "/usr/bin/clang",
             "mergeConfigurations": false,
-            "browse": {
-                "path": [
-                    "${workspaceFolder}/**"
-                ],
-                "limitSymbolsToIncludedHeaders": true
-            }
+            "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
             "name": "linux64",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${BOOST_ROOT}"
+                "${BOOST_ROOT}",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
+                "/usr/include/x86_64-linux-gnu/c++/11",
+                "/usr/include/x86_64-linux-gnu"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

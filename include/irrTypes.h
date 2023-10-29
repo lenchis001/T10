@@ -115,14 +115,14 @@ typedef double				f64;
 #ifdef _IRR_WINDOWS_API_
 //! Defines for s{w,n}printf because these methods do not match the ISO C
 //! standard on Windows platforms, but it does on all others.
-//! These should be int snprintf(char *str, size_t size, const char *format, ...);
-//! and int swprintf(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
+//! These should be int _snprintf(char *str, size_t size, const char *format, ...);
+//! and int _swprintf(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
 #if defined(_MSC_VER) && _MSC_VER > 1310 && !defined (_WIN32_WCE)
-#define swprintf swprintf_s
-#define snprintf sprintf_s
+#define _swprintf swprintf_s
+#define _snprintf sprintf_s
 #elif !defined(__CYGWIN__)
-#define swprintf _snwprintf
-#define snprintf _snprintf
+#define _swprintf _snwprintf
+#define _snprintf _snprintf
 #endif
 
 // define the wchar_t type if not already built in.
@@ -141,6 +141,10 @@ typedef unsigned short wchar_t;
 #endif // wchar is not defined
 #endif // microsoft compiler
 #endif // _IRR_WINDOWS_API_
+
+#ifdef _IRR_OSX_PLATFORM_
+#define _snprintf snprintf
+#endif // _IRR_OSX_PLATFORM_
 
 namespace irr
 {

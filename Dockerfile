@@ -18,4 +18,4 @@ WORKDIR /Project
 COPY . .
 RUN mkdir /Project/build
 WORKDIR /Project/build
-RUN cmake .. && make
+RUN cmake .. && make -j4
