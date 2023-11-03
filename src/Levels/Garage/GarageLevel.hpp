@@ -160,6 +160,7 @@ namespace T10::Levels::Garage
 
 			if (selectedTankIndex != -1)
 			{
+				switchToLevel(Levels::GAME, {});
 			}
 		}
 

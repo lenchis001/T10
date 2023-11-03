@@ -2,6 +2,7 @@
 
 #include "Levels/Garage/GarageLevel.hpp"
 #include "Levels/SignIn/SignInLevel.hpp"
+#include "Levels/Battle/BattleLevel.hpp"
 
 #include "Levels/Garage/BuyTankDialogController.hpp"
 
@@ -61,14 +62,22 @@ namespace T10
 										  boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		_addLevel(LevelType::MENU, boost::make_shared<Garage::GarageLevel>(
-									   _sceneManager,
-									   _guiEnvironment,
-									   functionsProcessingAware,
-									   userService,
-									   tankService,
-									   tankAssignmentService,
-									   buyTankDialogController,
-									   boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
+			_sceneManager,
+			_guiEnvironment,
+			functionsProcessingAware,
+			userService,
+			tankService,
+			tankAssignmentService,
+			buyTankDialogController,
+			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
+
+		_addLevel(LevelType::GAME, boost::make_shared<Battle::BattleLevel>(
+			_sceneManager,
+			_guiEnvironment,
+			functionsProcessingAware,
+			userService,
+			tankService,
+			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		_onSwitchlevelRequested(LevelType::SIGN_IN, {});
 	}
