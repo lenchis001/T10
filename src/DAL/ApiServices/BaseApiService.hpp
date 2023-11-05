@@ -10,8 +10,6 @@
 #include "DAL/Models/DataActionResult.h"
 #include "DAL/ApiServices/ICommunicationService.h"
 
-#include "DAL/ApiServices/WptreeValueTranslator.hpp"
-
 namespace T10::DAL::ApiServices
 {
     class BaseApiService
@@ -73,7 +71,7 @@ namespace T10::DAL::ApiServices
                     continue;
                 }
 
-                throw std::exception("An unknown type to cast.");
+                throw "An unknown type to cast.";
             }
 
             result += L"\n}";

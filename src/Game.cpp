@@ -99,6 +99,7 @@ namespace T10
 	void Game::_onSwitchlevelRequested(LevelType type, map<wstring, wstring> params)
 	{
 		_guiEnvironment->clear();
+		_sceneManager->clear();
 
 		if (_currentLevel)
 		{
