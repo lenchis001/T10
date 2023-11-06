@@ -151,7 +151,7 @@ namespace T10::Levels::Garage
 			_loadScene(path);
 
 			_sceneManager->addCameraSceneNode()->addAnimator(
-				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(irr::core::vector3df(0, 0, 0), 10));
+				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(irr::core::vector3df(0, 0, 0), 30));
 		}
 
 		void _goToBattle()
@@ -172,10 +172,14 @@ namespace T10::Levels::Garage
 
 			auto& tank = (*_allTanks)[_selectedTankIndex];
 
-			auto modelPath = std::wstring(L"Resources/Models/Tanks/") + tank.getName() + std::wstring(L"/Tank.obj");
+			auto modelPath = std::wstring(L"Resources/Models/Tanks/") + tank.getName() + L"/" + tank.getName() +L".irr";
 
-			auto mesh = _sceneManager->getMesh(modelPath.c_str());
-			_sceneManager->addMeshSceneNode(mesh)->setID(SELECTED_TANK_OBJECT);
+			auto selectedTankRoot = _sceneManager->addEmptySceneNode();
+			_loadScene(modelPath, selectedTankRoot);
+
+			selectedTankRoot->setID(SELECTED_TANK_OBJECT);
+			selectedTankRoot->setVisible(true);
+			selectedTankRoot->setScale(irr::core::vector3df(1));
 		}
 
 		void _showTanksBuyDialog()

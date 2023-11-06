@@ -67,7 +67,7 @@ namespace T10::DAL::ApiServices
                 }
 
                 if (pair.second.type() == BOOST_CORE_TYPEID(std::wstring)) {
-                    result += boost::any_cast<std::wstring>(pair.second);
+                    result += L"\"" + boost::any_cast<std::wstring>(pair.second) + L"\"";
                     continue;
                 }
 

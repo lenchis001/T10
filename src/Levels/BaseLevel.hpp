@@ -64,14 +64,16 @@ namespace T10::Levels
 			_switchLevelCallback(type, params);
 		}
 
-		void _loadScene(std::wstring &path)
+		bool _loadScene(std::wstring &path, boost::shared_ptr<irr::scene::ISceneNode> root = nullptr)
 		{
 			auto absolutePath = boost::filesystem::absolute(path);
 			_patchWorkingDirectory(absolutePath);
 
-			_sceneManager->loadScene(absolutePath.c_str());
+			auto result = _sceneManager->loadScene(absolutePath.c_str(), nullptr, root);
 
 			_unpatchWorkingDirectory();
+
+			return result;
 		}
 
 		void _loadGui(std::wstring &path)
