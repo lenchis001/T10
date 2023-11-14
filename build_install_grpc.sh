@@ -24,7 +24,15 @@ echo "Building GRPC..."
 cd $GRPS_REPOSITORY_DIR
 mkdir -p cmake/build
 cd $GRPS_REPOSITORY_DIR/cmake/build
-cmake -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF ../.. -A Win32
+
+if [ "$(uname)" == "Darwin" ]; then
+    cmake -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF ../..   
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    cmake -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF ../..
+else
+    cmake -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF ../.. -A Win32
+fi
+
 cmake --build . --config Release -j$CORES_NUMBER
 # ==============================================
 
@@ -35,5 +43,7 @@ cmake --install . --prefix $TARGET_DIR
 
 echo "Cleaning..."
 rm -rf $GRPS_REPOSITORY_DIR
+
+cd $INITIAL_DIR
 
 echo "Done."

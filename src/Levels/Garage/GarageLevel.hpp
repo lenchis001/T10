@@ -176,7 +176,10 @@ namespace T10::Levels::Garage
 
 			_selectedTankIndex = _tanksList->getSelected();
 
-			auto& tank = (*_allTanks)[_selectedTankIndex];
+			auto& tankAssignment = (*_myTanks)[_selectedTankIndex];
+			auto& tank = *(std::find_if(_allTanks->begin(), _allTanks->end(), [&](auto& t) {
+				return t.getId() == tankAssignment.getTankId();
+			}));
 
 			_loadTank(tank.getName(), SELECTED_TANK_OBJECT);
 		}
