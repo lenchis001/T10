@@ -2,6 +2,7 @@
 #define GARAGE_LEVEL
 
 #include "iostream"
+#include "future"
 
 #include "boost/smart_ptr.hpp"
 #include "boost/function.hpp"
@@ -9,6 +10,7 @@
 #include "Levels/BaseLevel.hpp"
 
 #include "Levels/Mixins/LoadingSplashAwareMixing.hpp"
+#include "Levels/Mixins/TankLoadingAware.hpp"
 
 #include "BLL/Services/User/IUserService.h"
 #include "BLL/Services/Tank/ITankService.h"
@@ -29,7 +31,7 @@ namespace T10::Levels::Garage
 #define BUY_TANK_CONTROL 5
 #define GARAGE_UI 7
 
-	class GarageLevel : public BaseLevel, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
+	class GarageLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
 	{
 	public:
 		GarageLevel(
@@ -40,7 +42,7 @@ namespace T10::Levels::Garage
 			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
 			boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> tankAssignemntService,
 			boost::shared_ptr<BuyTankDialogController> buyTankDialogController,
-			SwitchLevelCallbackFunction switchLevelCallback) : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
+			SwitchLevelCallbackFunction switchLevelCallback) : TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
 			Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_userService = userService;
@@ -58,6 +60,7 @@ namespace T10::Levels::Garage
 
 		void onUnloadRequested() override
 		{
+			
 		}
 
 		bool OnEvent(const irr::SEvent& event) override
@@ -150,8 +153,11 @@ namespace T10::Levels::Garage
 			std::wstring path = L"Resources/Levels/Garage/Garage.irr";
 			_loadScene(path);
 
-			_sceneManager->addCameraSceneNode()->addAnimator(
-				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(irr::core::vector3df(0, 0, 0), 30));
+			auto target = _sceneManager->addEmptySceneNode();
+
+			auto camera = _sceneManager->addCameraSceneNode();
+			camera->addAnimator(
+				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(target, 30));
 		}
 
 		void _goToBattle()
@@ -172,14 +178,7 @@ namespace T10::Levels::Garage
 
 			auto& tank = (*_allTanks)[_selectedTankIndex];
 
-			auto modelPath = std::wstring(L"Resources/Models/Tanks/") + tank.getName() + L"/" + tank.getName() +L".irr";
-
-			auto selectedTankRoot = _sceneManager->addEmptySceneNode();
-			_loadScene(modelPath, selectedTankRoot);
-
-			selectedTankRoot->setID(SELECTED_TANK_OBJECT);
-			selectedTankRoot->setVisible(true);
-			selectedTankRoot->setScale(irr::core::vector3df(1));
+			_loadTank(tank.getName(), SELECTED_TANK_OBJECT);
 		}
 
 		void _showTanksBuyDialog()

@@ -7,8 +7,10 @@
 #include "boost/function.hpp"
 
 #include "Levels/BaseLevel.hpp"
+#include "Tank/TankMovingAnimator.hpp"
 
 #include "Levels/Mixins/LoadingSplashAwareMixing.hpp"
+#include "Levels/Mixins/TankLoadingAware.hpp"
 
 #include "BLL/Services/User/IUserService.h"
 #include "BLL/Services/Tank/ITankService.h"
@@ -18,7 +20,7 @@
 
 namespace T10::Levels::Battle
 {
-	class BattleLevel : public BaseLevel, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
+	class BattleLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
 	{
 	public:
 		BattleLevel(
@@ -27,7 +29,7 @@ namespace T10::Levels::Battle
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
 			boost::shared_ptr<BLL::Services::User::IUserService> userService,
 			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
-			SwitchLevelCallbackFunction switchLevelCallback) : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
+			SwitchLevelCallbackFunction switchLevelCallback) : Mixins::TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
 			Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_userService = userService;
@@ -113,8 +115,14 @@ namespace T10::Levels::Battle
 			std::wstring path = L"Resources/Levels/Testgrad/Testgrad.irr";
 			_loadScene(path);
 
-			_sceneManager->addCameraSceneNode()->addAnimator(
-				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(irr::core::vector3df(0, 0, 0), 10));
+			auto tank = _loadTank(L"T-1");
+			auto body = _sceneManager->getSceneNodeFromName("Body", tank);
+			body->addAnimator(boost::make_shared<Tank::TankMovingAnimator>());
+
+			auto camera = _sceneManager->addCameraSceneNode();
+			//camera->setParent(body);
+			camera->addAnimator(
+				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(body, 10));
 		}
 	};
 }

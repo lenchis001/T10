@@ -11,7 +11,7 @@ namespace T10::Levels::Garage::Cameras
 	{
 	public:
 		GarageCameraAnimator(
-			irr::core::vector3df target,
+			boost::weak_ptr<irr::scene::ISceneNode> target,
 			float minDistance = 4,
 			float distance = 5,
 			float maxDistance = 6,
@@ -36,7 +36,6 @@ namespace T10::Levels::Garage::Cameras
 			_phi = phi;
 			_theta = theta;
 			_recalculatePosition();
-			_isTargetUpdated = false;
 			_isCameraUpdateRequired = true;
 			_isInitialized = false;
 
@@ -66,21 +65,19 @@ namespace T10::Levels::Garage::Cameras
 
 		void animateNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::u32 timeMs) override
 		{
-			if (!_isCameraUpdateRequired && _isInitialized)
-			{
-				// no updates requires, don't do useless job
+			auto camera = boost::static_pointer_cast<irr::scene::ICameraSceneNode>(node);
+			auto actualTargetPosition = this->_target.lock()->getPosition();
+
+			if (_lastTrackedPosition != actualTargetPosition || _isCameraUpdateRequired) {
+				_lastTrackedPosition = actualTargetPosition;
+				_recalculatePosition();
+				camera->setPosition(_position);
+			}
+			else {
 				return;
 			}
 
-			boost::shared_ptr<irr::scene::ICameraSceneNode> camera = boost::static_pointer_cast<irr::scene::ICameraSceneNode>(node);
-
-			if (!_isTargetUpdated)
-			{
-				camera->setTarget(this->_target);
-				_isTargetUpdated = true;
-			}
-
-			camera->setPosition(_position);
+			camera->setTarget(_lastTrackedPosition);
 
 			_isCameraUpdateRequired = false;
 			_isInitialized = true;
@@ -98,7 +95,7 @@ namespace T10::Levels::Garage::Cameras
 			_position.Y = _distance * cos(_theta);
 			_position.Z = _distance * sin(_theta) * sin(_phi);
 
-			_position += _target;
+			_position += _lastTrackedPosition;
 		}
 
 		void _processMouseEvent(int x, int y, bool isLeftButtonPressed, float wheel)
@@ -164,9 +161,10 @@ namespace T10::Levels::Garage::Cameras
 
 		int _sensitivity;
 		irr::core::vector2di _previousMousePoint;
-		irr::core::vector3df _target, _position;
+		irr::core::vector3df _position, _lastTrackedPosition;
 		float _minDistance, _distance, _maxDistance, _phi, _theta, _minTheta, _maxTheta;
-		bool _isTargetUpdated, _isCameraUpdateRequired, _isInitialized;
+		bool _isCameraUpdateRequired, _isInitialized;
+		boost::weak_ptr<irr::scene::ISceneNode> _target;
 	};
 }
 
