@@ -18,6 +18,8 @@
 
 #include "Levels/Garage/BuyTankDialogController.hpp"
 
+#include "GrpcTest/GrpcService.hpp"
+
 namespace T10::Levels::Battle
 {
 	class BattleLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
@@ -40,6 +42,9 @@ namespace T10::Levels::Battle
 		{
 			_createUi();
 			_createScene();
+
+			char* argv[1] = { "program" };
+			test(1, argv);
 		}
 
 		void onUnloadRequested() override
