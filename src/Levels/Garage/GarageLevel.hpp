@@ -16,7 +16,7 @@
 #include "BLL/Services/Tank/ITankService.h"
 #include "BLL/Services/TankAssignment/ITankAssignmentService.h"
 
-#include "Cameras/GarageCameraAnimator.hpp"
+#include "Levels/Cameras/GarageCameraAnimator.hpp"
 
 #include "Levels/Garage/BuyTankDialogController.hpp"
 
@@ -157,7 +157,7 @@ namespace T10::Levels::Garage
 
 			auto camera = _sceneManager->addCameraSceneNode();
 			camera->addAnimator(
-				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(target, 30));
+				boost::make_shared<T10::Levels::Cameras::GarageCameraAnimator>(target, 30));
 		}
 
 		void _goToBattle()

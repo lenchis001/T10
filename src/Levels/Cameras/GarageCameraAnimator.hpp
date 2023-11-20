@@ -2,8 +2,9 @@
 #define GARAGE_CAMERA_ANIMATOR
 
 #include "irrlicht.h"
+#include "ICameraAnimatorDelegate.h"
 
-namespace T10::Levels::Garage::Cameras
+namespace T10::Levels::Cameras
 {
 	const float TWO_PI = irr::core::PI * 2;
 
@@ -19,7 +20,8 @@ namespace T10::Levels::Garage::Cameras
 			float maxTheta = irr::core::HALF_PI - 0.2,
 			int sensitivity = 300,
 			float phi = 0.85,
-			float theta = 1.2)
+			float theta = 1.2,
+			boost::shared_ptr<ICameraAnimatorDelegate> cameraDelegate = nullptr)
 		{
 			_target = target;
 			_minDistance = minDistance;
@@ -39,6 +41,8 @@ namespace T10::Levels::Garage::Cameras
 			_isCameraUpdateRequired = true;
 			_isInitialized = false;
 
+			_cameraDelegate = cameraDelegate;
+
 			// It means that start point is not set yet
 			_previousMousePoint.X = -1;
 
@@ -54,6 +58,10 @@ namespace T10::Levels::Garage::Cameras
 				return true;
 			}
 
+			if (_cameraDelegate && _cameraDelegate->OnEvent(event)) {
+				return true;
+			}
+
 			return ISceneNodeAnimator::OnEvent(event);
 		}
 
@@ -65,6 +73,10 @@ namespace T10::Levels::Garage::Cameras
 
 		void animateNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::u32 timeMs) override
 		{
+			if (_cameraDelegate) {
+				_cameraDelegate->animateNode(timeMs);
+			}
+
 			auto camera = boost::static_pointer_cast<irr::scene::ICameraSceneNode>(node);
 			auto actualTargetPosition = this->_target.lock()->getPosition();
 
@@ -165,6 +177,7 @@ namespace T10::Levels::Garage::Cameras
 		float _minDistance, _distance, _maxDistance, _phi, _theta, _minTheta, _maxTheta;
 		bool _isCameraUpdateRequired, _isInitialized;
 		boost::weak_ptr<irr::scene::ISceneNode> _target;
+		boost::shared_ptr<ICameraAnimatorDelegate> _cameraDelegate;
 	};
 }
 

@@ -18,7 +18,7 @@ set(Game_DEFINITIONS _IRR_WCHAR_FILESYSTEM NO_IRR_COMPILE_WITH_DIRECTINPUT_JOYST
     CACHE INTERNAL "${PROJECT_NAME}: Definitions" FORCE)
 add_compile_definitions(${Game_DEFINITIONS})
 
-include_directories("include" "src" $ENV{GRPC}/include)
+include_directories("include" "src")
 
 file(GLOB_RECURSE game_sources_files "*.cpp" "*.cc")
 add_library(Game SHARED ${game_sources_files})
@@ -41,7 +41,6 @@ if(MSVC)
         ${CMAKE_BINARY_DIR}/packages/boost_locale-vc143/lib/native
         ${CMAKE_BINARY_DIR}/packages/boost_iostreams-vc143/lib/native
     )
-    file(GLOB external_lib_files $ENV{GRPC}/lib/*.lib)
 else()
     include_directories($ENV{BOOST_ROOT})
     file(GLOB external_lib_files $ENV{BOOST_ROOT}/stage/lib/*.a)

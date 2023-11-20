@@ -18,8 +18,6 @@
 
 #include "Levels/Garage/BuyTankDialogController.hpp"
 
-#include "GrpcTest/GrpcService.hpp"
-
 namespace T10::Levels::Battle
 {
 	class BattleLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
@@ -42,9 +40,6 @@ namespace T10::Levels::Battle
 		{
 			_createUi();
 			_createScene();
-
-			char* argv[1] = { "program" };
-			test(1, argv);
 		}
 
 		void onUnloadRequested() override
@@ -108,6 +103,9 @@ namespace T10::Levels::Battle
 			std::wstring path = L"Resources/GUI/Battle/Status.xml";
 			_loadGui(path);
 
+			path = L"Resources/GUI/Battle/Aim.xml";
+			_loadGui(path);
+
 			auto rootGuiElement = _guiEnvironment->getRootGUIElement();
 			_garageGui = rootGuiElement->getElementFromId(GARAGE_UI);
 
@@ -122,12 +120,13 @@ namespace T10::Levels::Battle
 
 			auto tank = _loadTank(L"T-1");
 			auto body = _sceneManager->getSceneNodeFromName("Body", tank);
-			body->addAnimator(boost::make_shared<Tank::TankMovingAnimator>());
 
 			auto camera = _sceneManager->addCameraSceneNode();
 			//camera->setParent(body);
+			auto tankMovingAnimator = boost::make_shared<Tank::TankMovingAnimator>(body, 0.01F, 0.04F);
+
 			camera->addAnimator(
-				boost::make_shared<T10::Levels::Garage::Cameras::GarageCameraAnimator>(body, 10));
+				boost::make_shared<T10::Levels::Cameras::GarageCameraAnimator>(body, 10, 5, 6, 0.6F, irr::core::HALF_PI - 0.2, 300, 0.85F, 1.2F, tankMovingAnimator));
 		}
 	};
 }

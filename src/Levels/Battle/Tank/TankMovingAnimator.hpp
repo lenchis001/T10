@@ -2,54 +2,93 @@
 #define TANK_MOVING_ANIMATOR
 
 #include "irrlicht.h"
+#include "Levels/Cameras/ICameraAnimatorDelegate.h"
 
 namespace T10::Levels::Battle::Tank {
-	class TankMovingAnimator : public irr::scene::ISceneNodeAnimator {
+	class TankMovingAnimator : public Cameras::ICameraAnimatorDelegate {
 	public:
-		//! Animates a scene node.
-		/** \param node Node to animate.
-		\param timeMs Current time in milli seconds. */
-		virtual void animateNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::u32 timeMs) {
-			auto position = node->getPosition();
-			position.X += timeMs;
+		TankMovingAnimator(boost::shared_ptr<irr::scene::ISceneNode> tankBody, float movingSpeed, float rotationSpeed) {
+			_moveForward = false;
+			_moveBackward = false;
+			_rotateLeft = false;
+			_rotateRight = false;
 
-			node->setPosition(position/500);
+			_movingSpeed = movingSpeed;
+			_rotationSpeed = rotationSpeed;
+
+			_tankBody = tankBody;
+
+			_previousAnimationTime = 0;
 		}
 
-		//! Creates a clone of this animator.
-		/** Please note that you will have to drop
-		(IReferenceCounted::drop()) the returned pointer after calling this. */
-		virtual boost::shared_ptr<ISceneNodeAnimator> createClone(boost::shared_ptr<irr::scene::ISceneNode> node,
-			boost::shared_ptr<irr::scene::ISceneManager> newManager = 0) {
-			return nullptr;
+		virtual void animateNode(irr::u32 timeMs) {
+			auto timeDelta = timeMs - _previousAnimationTime;
+			_previousAnimationTime = timeMs;
+
+			if (_rotateLeft) {
+				_rotateNode(_tankBody, -_rotationSpeed * timeDelta);
+			}
+			else if (_rotateRight) {
+				_rotateNode(_tankBody, _rotationSpeed * timeDelta);
+			}
+
+			if (_moveForward) {
+				_moveNode(_tankBody, _movingSpeed * timeDelta);
+			}
+			else if (_moveBackward) {
+				_moveNode(_tankBody, -_movingSpeed * timeDelta);
+			}
 		}
 
-		//! Returns true if this animator receives events.
-		/** When attached to an active camera, this animator will be
-		able to respond to events such as mouse and keyboard events. */
-		virtual bool isEventReceiverEnabled() const
-		{
-			return false;
-		}
-
-		//! Event receiver, override this function for camera controlling animators
 		virtual bool OnEvent(const irr::SEvent& event)
 		{
+			if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT) {
+				switch (event.KeyInput.Key)
+				{
+				case irr::EKEY_CODE::KEY_KEY_W:
+					_moveForward = event.KeyInput.PressedDown;
+					return true;
+				case irr::EKEY_CODE::KEY_KEY_S:
+					_moveBackward = event.KeyInput.PressedDown;
+					return true;
+				case irr::EKEY_CODE::KEY_KEY_A:
+					_rotateLeft = event.KeyInput.PressedDown;
+					return true;
+				case irr::EKEY_CODE::KEY_KEY_D:
+					_rotateRight = event.KeyInput.PressedDown;
+					return true;
+				default:
+					break;
+				}
+			}
+
 			return false;
 		}
+	private:
+		bool _moveForward, _moveBackward, _rotateLeft, _rotateRight;
+		boost::shared_ptr<irr::scene::ISceneNode> _tankBody;
+		float _movingSpeed, _rotationSpeed;
+		irr::u32 _previousAnimationTime;
 
-		//! Returns type of the scene node animator
-		virtual irr::scene::ESCENE_NODE_ANIMATOR_TYPE getType() const
-		{
-			return irr::scene::ESCENE_NODE_ANIMATOR_TYPE::ESNAT_UNKNOWN;
+		void _rotateNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::f32 value) const {
+			auto rotation = node->getRotation();
+
+			rotation.Y += value;
+
+			node->setRotation(rotation);
 		}
 
-		//! Returns if the animator has finished.
-		/** This is only valid for non-looping animators with a discrete end state.
-		\return true if the animator has finished, false if it is still running. */
-		virtual bool hasFinished(void) const
-		{
-			return false;
+		void _moveNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::f32 value) const {
+			auto position = node->getPosition();
+			const auto& rotation = node->getRotation();
+
+			auto index = (rotation.Y * -1) / (180 / irr::core::PI);
+			
+			// sin of PI/2 is 1
+			position.X += value /** sin(irr::core::HALF_PI)*/ * cos(index);
+			position.Z += value /** sin(irr::core::HALF_PI)*/ * sin(index);
+
+			node->setPosition(position);
 		}
 	};
 } // T10::Levels::Battle::Tank
