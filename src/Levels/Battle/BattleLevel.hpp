@@ -20,6 +20,8 @@
 
 namespace T10::Levels::Battle
 {
+	#define AIM_CONTROL 1
+
 	class BattleLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
 	{
 	public:
@@ -106,6 +108,8 @@ namespace T10::Levels::Battle
 			path = L"Resources/GUI/Battle/Aim.xml";
 			_loadGui(path);
 
+			_centerAim();
+
 			auto rootGuiElement = _guiEnvironment->getRootGUIElement();
 			_garageGui = rootGuiElement->getElementFromId(GARAGE_UI);
 
@@ -126,7 +130,16 @@ namespace T10::Levels::Battle
 			auto tankMovingAnimator = boost::make_shared<Tank::TankMovingAnimator>(body, 0.01F, 0.04F);
 
 			camera->addAnimator(
-				boost::make_shared<T10::Levels::Cameras::GarageCameraAnimator>(body, 10, 5, 6, 0.6F, irr::core::HALF_PI - 0.2, 300, 0.85F, 1.2F, tankMovingAnimator));
+				boost::make_shared<T10::Levels::Cameras::GarageCameraAnimator>(body, 5, 7, 15, 0.2F, irr::core::HALF_PI + 0.2, 300, 0.85F, 1.2F, 3, tankMovingAnimator));
+		}
+
+		void _centerAim() {
+			auto aim = _guiEnvironment->getRootGUIElement()->getElementFromId(AIM_CONTROL);
+
+			auto parentRect = aim->getParent()->getAbsoluteClippingRect().getSize();
+			auto rect = aim->getAbsolutePosition().getSize();
+
+			aim->setRelativePosition(parentRect / 2 - rect / 2);
 		}
 	};
 }

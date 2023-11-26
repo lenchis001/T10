@@ -21,6 +21,7 @@ namespace T10::Levels::Cameras
 			int sensitivity = 300,
 			float phi = 0.85,
 			float theta = 1.2,
+			float upShift = 0,
 			boost::shared_ptr<ICameraAnimatorDelegate> cameraDelegate = nullptr)
 		{
 			_target = target;
@@ -30,6 +31,7 @@ namespace T10::Levels::Cameras
 			_minTheta = minTheta;
 			_maxTheta = maxTheta;
 			_sensitivity = sensitivity;
+			_upShift = upShift;
 
 			assert(_minTheta >= 0);
 			assert(maxTheta <= irr::core::PI);
@@ -79,6 +81,8 @@ namespace T10::Levels::Cameras
 
 			auto camera = boost::static_pointer_cast<irr::scene::ICameraSceneNode>(node);
 			auto actualTargetPosition = this->_target.lock()->getPosition();
+
+			actualTargetPosition.Y += _upShift;
 
 			if (_lastTrackedPosition != actualTargetPosition || _isCameraUpdateRequired) {
 				_lastTrackedPosition = actualTargetPosition;
@@ -174,7 +178,7 @@ namespace T10::Levels::Cameras
 		int _sensitivity;
 		irr::core::vector2di _previousMousePoint;
 		irr::core::vector3df _position, _lastTrackedPosition;
-		float _minDistance, _distance, _maxDistance, _phi, _theta, _minTheta, _maxTheta;
+		float _minDistance, _distance, _maxDistance, _phi, _theta, _minTheta, _maxTheta, _upShift;
 		bool _isCameraUpdateRequired, _isInitialized;
 		boost::weak_ptr<irr::scene::ISceneNode> _target;
 		boost::shared_ptr<ICameraAnimatorDelegate> _cameraDelegate;
