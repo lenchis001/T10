@@ -1,5 +1,5 @@
-#ifndef ITRACKING_REQUEST_BASE
-#define ITRACKING_REQUEST_BASE
+#ifndef ITRACKING_REQUEST
+#define ITRACKING_REQUEST
 
 namespace T10::BLL::Models::Tracking::Request {
 	class ITrackingRequest {
@@ -8,4 +8,4 @@ namespace T10::BLL::Models::Tracking::Request {
 	};
 }
 
-#endif // ITRACKING_REQUEST_BASE
+#endif // ITRACKING_REQUEST

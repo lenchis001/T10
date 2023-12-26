@@ -1,5 +1,5 @@
-#ifndef FIRE_TRACKING_REQUEST_BASE
-#define FIRE_TRACKING_REQUEST_BASE
+#ifndef FIRE_TRACKING_REQUEST
+#define FIRE_TRACKING_REQUEST
 
 #include "ITrackingRequest.hpp"
 
@@ -14,4 +14,4 @@ namespace T10::BLL::Models::Tracking::Request {
 
 }
 
-#endif // FIRE_TRACKING_REQUEST_BASE
+#endif // FIRE_TRACKING_REQUEST

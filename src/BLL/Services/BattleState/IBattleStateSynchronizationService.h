@@ -18,7 +18,7 @@ namespace T10::BLL::Services::BattleState {
 		virtual void leaveBattle() = 0;
 
 		virtual boost::future<void> moveBody(int left, int right) = 0;
-		virtual boost::future<void> moveTurret(const irr::core::vector3df& target) = 0;
+		virtual void moveTurret(const irr::core::vector3df& rotation) = 0;
 
 		virtual void fire() = 0;
 

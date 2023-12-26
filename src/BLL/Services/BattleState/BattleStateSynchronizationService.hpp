@@ -8,6 +8,8 @@
 #include "IBattleStateSynchronizationService.h"
 
 #include "BLL/Models/Tracking/Request/FireTrackingRequest.hpp"
+#include "BLL/Models/Tracking/Request/MoveTurretTrackingRequest.hpp"
+#include "BLL/Models/Tracking/Request/MoveBodyTrackingRequest.hpp"
 
 namespace T10::BLL::Services::BattleState {
 	class BattleStateSynchronizationService : public IBattleStateSynchronizationService {
@@ -28,17 +30,24 @@ namespace T10::BLL::Services::BattleState {
 		}
 
 		boost::future<void> moveBody(int left, int right) {
-			throw "";
+			auto model = Models::Tracking::Request::MoveBodyTrackingRequest(left, right);
+
+			_socketService->send(model.toJson());
+
+			boost::promise<void> p;
+			return p.get_future();
 		}
 
-		boost::future<void> moveTurret(const irr::core::vector3df& target) {
-			throw "";
+		void moveTurret(const irr::core::vector3df& rotation) {
+			auto model = Models::Tracking::Request::MoveTurretTrackingRequest(rotation);
+
+			_socketService->send(model.toJson());
 		}
 
 		void fire() {
-			auto fireRequest = Models::Tracking::Request::FireTrackingRequest();
+			auto model = Models::Tracking::Request::FireTrackingRequest();
 
-			_socketService->send(fireRequest.toJson());
+			_socketService->send(model.toJson());
 		}
 
 		void addTrackableObject(boost::shared_ptr<Tracking::ITrackableObject> object) {
