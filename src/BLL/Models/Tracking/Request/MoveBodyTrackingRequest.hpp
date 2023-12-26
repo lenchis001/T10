@@ -9,22 +9,22 @@ namespace T10::BLL::Models::Tracking::Request {
 
 	class MoveBodyTrackingRequest : public ITrackingRequest {
 	public:
-		MoveBodyTrackingRequest(int left, int right) {
-			_left = left;
-			_right = right;
+		MoveBodyTrackingRequest(int x, int y) {
+			_x = x;
+			_y = y;
 		}
 
 		std::string toJson() const override {
 			return "{"
 						"\"name\":\"moveBody\","
 						"\"value\": { "
-							"\"left\":" + std::to_string(_left) + ","
-							"\"right\":" + std::to_string(_right) + ","
+							"\"x\":" + std::to_string(_x) + ","
+							"\"y\":" + std::to_string(_y) + ","
 						"}"
 					"}";
 		}
 	private:
-		int _left, _right;
+		int _x, _y;
 	};
 
 }

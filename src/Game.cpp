@@ -96,9 +96,8 @@ namespace T10
 			_sceneManager,
 			_guiEnvironment,
 			functionsProcessingAware,
-			userService,
-			tankService,
 			cursorControl,
+			battleStateSynchronizationService,
 			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		_onSwitchlevelRequested(LevelType::SIGN_IN, {});

@@ -23,7 +23,7 @@
             "includePath": [
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/src",
-                "${BOOST_ROOT}"
+                "${BOOST_ROOT}",
             ],
             "defines": [],
             "macFrameworkPath": [

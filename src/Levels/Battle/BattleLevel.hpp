@@ -7,20 +7,18 @@
 #include "boost/function.hpp"
 
 #include "Levels/BaseLevel.hpp"
-#include "Tank/TankMovingAnimator.hpp"
 
 #include "Levels/Mixins/LoadingSplashAwareMixing.hpp"
 #include "Levels/Mixins/TankLoadingAware.hpp"
 
 #include "BLL/Services/User/IUserService.h"
-#include "BLL/Services/Tank/ITankService.h"
-#include "BLL/Services/TankAssignment/ITankAssignmentService.h"
+#include "BLL/Services/BattleState/IBattleStateSynchronizationService.h"
 
 #include "Levels/Garage/BuyTankDialogController.hpp"
 
 namespace T10::Levels::Battle
 {
-	#define AIM_CONTROL 1
+#define AIM_CONTROL 1
 
 	class BattleLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
 	{
@@ -29,15 +27,16 @@ namespace T10::Levels::Battle
 			boost::shared_ptr<irr::scene::ISceneManager> sceneManager,
 			boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
-			boost::shared_ptr<BLL::Services::User::IUserService> userService,
-			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
 			boost::shared_ptr<irr::gui::ICursorControl> cursorControl,
-			SwitchLevelCallbackFunction switchLevelCallback) : Mixins::TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
-			Mixins::LoadingSplashAwareMixin(guiEnvironment)
+			boost::shared_ptr<BLL::Services::BattleState::IBattleStateSynchronizationService> battleStateSynchronizationService,
+			SwitchLevelCallbackFunction switchLevelCallback)
+			: Mixins::TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
+			  Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
-			_userService = userService;
-			_tankService = tankService;
 			_cursorControl = cursorControl;
+			_battleStateSynchronizationService = battleStateSynchronizationService;
+
+			_moveX = _moveY = 0;
 		}
 
 		void onLoadRequested() override
@@ -50,7 +49,7 @@ namespace T10::Levels::Battle
 		{
 		}
 
-		bool OnEvent(const irr::SEvent& event) override
+		bool OnEvent(const irr::SEvent &event) override
 		{
 			if (event.EventType == irr::EEVENT_TYPE::EET_GUI_EVENT)
 			{
@@ -87,17 +86,40 @@ namespace T10::Levels::Battle
 					break;
 				}
 			}
+			else if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT)
+			{
+				if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT)
+				{
+					switch (event.KeyInput.Key)
+					{
+					case irr::EKEY_CODE::KEY_KEY_W:
+						_moveX = 1;
+						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
+						return true;
+					case irr::EKEY_CODE::KEY_KEY_S:
+						_moveX = -1;
+						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
+						return true;
+					case irr::EKEY_CODE::KEY_KEY_A:
+						_moveY = -1;
+						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
+						return true;
+					case irr::EKEY_CODE::KEY_KEY_D:
+						_moveY = 1;
+						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
+						return true;
+					default:
+						break;
+					}
+				}
+			}
 
 			return BaseLevel::OnEvent(event);
 		}
 
 	private:
-		boost::shared_ptr<const std::vector<BLL::Models::Tanks::Tank>> _allTanks;
-		boost::shared_ptr<std::vector<BLL::Models::TankAssignments::TankAssignment>> _myTanks;
-		int _selectedTankIndex = -1;
-
-		boost::shared_ptr<BLL::Services::User::IUserService> _userService;
-		boost::shared_ptr<BLL::Services::Tanks::ITankService> _tankService;
+		int _moveX, _moveY;
+		boost::shared_ptr<BLL::Services::BattleState::IBattleStateSynchronizationService> _battleStateSynchronizationService;
 		boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> _tankAssignmentService;
 		boost::shared_ptr<irr::gui::ICursorControl> _cursorControl;
 
@@ -121,13 +143,14 @@ namespace T10::Levels::Battle
 			auto body = _sceneManager->getSceneNodeFromName("Body", tank);
 
 			auto camera = _sceneManager->addCameraSceneNode();
-			auto tankMovingAnimator = boost::make_shared<Tank::TankMovingAnimator>(body, 0.01F, 0.04F);
+			// auto tankMovingAnimator = boost::make_shared<Tank::CurrentPlayerTankMovingAnimator>(body, 0.01F, 0.04F);
 
 			camera->addAnimator(
-				boost::make_shared<T10::Levels::Cameras::GarageCameraAnimator>(body, 5, 7, 15, 0.2F, irr::core::HALF_PI + 0.2, 300, 0.85F, 1.2F, 3, tankMovingAnimator));
+				boost::make_shared<T10::Levels::Cameras::GarageCameraAnimator>(body, 5, 7, 15, 0.2F, irr::core::HALF_PI + 0.2, 300, 0.85F, 1.2F, 3, nullptr));
 		}
 
-		void _centerAim() {
+		void _centerAim()
+		{
 			auto aim = _guiEnvironment->getRootGUIElement()->getElementFromId(AIM_CONTROL);
 
 			auto parentRect = aim->getParent()->getAbsoluteClippingRect().getSize();

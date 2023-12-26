@@ -29,8 +29,8 @@ namespace T10::BLL::Services::BattleState {
 			_socketService->disconnect();
 		}
 
-		boost::future<void> moveBody(int left, int right) {
-			auto model = Models::Tracking::Request::MoveBodyTrackingRequest(left, right);
+		boost::future<void> moveBody(int x, int y) {
+			auto model = Models::Tracking::Request::MoveBodyTrackingRequest(x, y);
 
 			_socketService->send(model.toJson());
 
