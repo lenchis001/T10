@@ -20,7 +20,7 @@ add_compile_definitions(${Game_DEFINITIONS})
 
 include_directories("include" "src")
 
-file(GLOB_RECURSE game_sources_files "*.cpp" "*.cc")
+file(GLOB_RECURSE game_sources_files "src/*.cpp" "src/*.cc")
 add_library(Game SHARED ${game_sources_files})
 
 if(MSVC)
@@ -31,6 +31,7 @@ if(MSVC)
         exec_program(${NUGET_EXE} ARGS install "boost_thread-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
         exec_program(${NUGET_EXE} ARGS install "boost_chrono-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
         exec_program(${NUGET_EXE} ARGS install "boost_locale-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+        exec_program(${NUGET_EXE} ARGS install "boost_random-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
     endif()
 
     include_directories(${CMAKE_BINARY_DIR}/packages/boost/lib/native/include)
@@ -40,6 +41,7 @@ if(MSVC)
         ${CMAKE_BINARY_DIR}/packages/boost_chrono-vc143/lib/native
         ${CMAKE_BINARY_DIR}/packages/boost_locale-vc143/lib/native
         ${CMAKE_BINARY_DIR}/packages/boost_iostreams-vc143/lib/native
+        ${CMAKE_BINARY_DIR}/packages/boost_random-vc143/lib/native
     )
 else()
     include_directories($ENV{BOOST_ROOT})

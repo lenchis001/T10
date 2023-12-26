@@ -31,11 +31,13 @@ namespace T10::Levels::Battle
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
 			boost::shared_ptr<BLL::Services::User::IUserService> userService,
 			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
+			boost::shared_ptr<irr::gui::ICursorControl> cursorControl,
 			SwitchLevelCallbackFunction switchLevelCallback) : Mixins::TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
 			Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_userService = userService;
 			_tankService = tankService;
+			_cursorControl = cursorControl;
 		}
 
 		void onLoadRequested() override
@@ -90,8 +92,6 @@ namespace T10::Levels::Battle
 		}
 
 	private:
-		boost::shared_ptr<irr::gui::IGUIElement> _garageGui;
-		boost::shared_ptr<irr::gui::IGUIListBox> _tanksList;
 		boost::shared_ptr<const std::vector<BLL::Models::Tanks::Tank>> _allTanks;
 		boost::shared_ptr<std::vector<BLL::Models::TankAssignments::TankAssignment>> _myTanks;
 		int _selectedTankIndex = -1;
@@ -99,6 +99,7 @@ namespace T10::Levels::Battle
 		boost::shared_ptr<BLL::Services::User::IUserService> _userService;
 		boost::shared_ptr<BLL::Services::Tanks::ITankService> _tankService;
 		boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> _tankAssignmentService;
+		boost::shared_ptr<irr::gui::ICursorControl> _cursorControl;
 
 		void _createUi()
 		{
@@ -109,12 +110,6 @@ namespace T10::Levels::Battle
 			_loadGui(path);
 
 			_centerAim();
-
-			auto rootGuiElement = _guiEnvironment->getRootGUIElement();
-			_garageGui = rootGuiElement->getElementFromId(GARAGE_UI);
-
-			boost::shared_ptr<irr::gui::IGUIElement> element = rootGuiElement->getElementFromId(TANKS_LIST_CONTROL, true);
-			_tanksList = boost::static_pointer_cast<irr::gui::IGUIListBox>(element);
 		}
 
 		void _createScene()
@@ -126,7 +121,6 @@ namespace T10::Levels::Battle
 			auto body = _sceneManager->getSceneNodeFromName("Body", tank);
 
 			auto camera = _sceneManager->addCameraSceneNode();
-			//camera->setParent(body);
 			auto tankMovingAnimator = boost::make_shared<Tank::TankMovingAnimator>(body, 0.01F, 0.04F);
 
 			camera->addAnimator(

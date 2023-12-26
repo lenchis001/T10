@@ -1,4 +1,4 @@
-#include "boost/bind.hpp"
+﻿#include "boost/bind.hpp"
 
 #include "Levels/Garage/GarageLevel.hpp"
 #include "Levels/SignIn/SignInLevel.hpp"
@@ -20,6 +20,11 @@
 #include "DAL/ApiServices/CommunicationService.hpp"
 
 #include "DAL/Services/StorageService.hpp"
+
+#include "DAL/ApiServices/WebSocketApiService.hpp"
+#include "BLL/Services/BattleState/BattleStateSynchronizationService.hpp"
+
+boost::shared_ptr<T10::DAL::ApiServices::WebSocketApiService> socketPtr;
 
 namespace T10
 {
@@ -51,15 +56,30 @@ namespace T10
 		auto tankAssignmentApiService = boost::make_shared<DAL::ApiServices::TankAssignment::TankAssignmentApiService>(communicationService);
 		auto tankAssignmentService = boost::make_shared<BLL::Services::TankAssignment::TankAssignmentService>(tankAssignmentApiService);
 
-		boost::shared_ptr<Levels::Garage::BuyTankDialogController> buyTankDialogController 
+		auto webSocketApiService = socketPtr = boost::make_shared<DAL::ApiServices::WebSocketApiService>();
+		auto battleStateSynchronizationService = boost::make_shared<BLL::Services::BattleState::BattleStateSynchronizationService>(webSocketApiService);
+
+		auto connectFuture = webSocketApiService->connect("ws://localhost:8080");
+		connectFuture.then([&](auto f) {
+			socketPtr->setDataHandler([](auto message) {
+	
+			std::cout << message << std::endl;
+				});
+
+
+
+			socketPtr->send("Hell!");
+			});
+
+		boost::shared_ptr<Levels::Garage::BuyTankDialogController> buyTankDialogController
 			= boost::make_shared<Levels::Garage::BuyTankDialogController>(functionsProcessingAware, tankAssignmentService, _guiEnvironment);
 
 		_addLevel(LevelType::SIGN_IN, boost::make_shared<SignIn::SignInLevel>(
-										  _sceneManager,
-										  _guiEnvironment,
-										  functionsProcessingAware,
-										  userService,
-										  boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
+			_sceneManager,
+			_guiEnvironment,
+			functionsProcessingAware,
+			userService,
+			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		_addLevel(LevelType::MENU, boost::make_shared<Garage::GarageLevel>(
 			_sceneManager,
@@ -71,12 +91,14 @@ namespace T10
 			buyTankDialogController,
 			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
+		auto cursorControl = device->getCursorControl();
 		_addLevel(LevelType::GAME, boost::make_shared<Battle::BattleLevel>(
 			_sceneManager,
 			_guiEnvironment,
 			functionsProcessingAware,
 			userService,
 			tankService,
+			cursorControl,
 			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		_onSwitchlevelRequested(LevelType::SIGN_IN, {});
@@ -86,7 +108,7 @@ namespace T10
 	{
 	}
 
-	bool Game::OnEvent(const irr::SEvent &event)
+	bool Game::OnEvent(const irr::SEvent& event)
 	{
 		if (_currentLevel)
 		{

@@ -41,7 +41,6 @@ namespace T10::Levels::Cameras
 			_theta = theta;
 			_recalculatePosition();
 			_isCameraUpdateRequired = true;
-			_isInitialized = false;
 
 			_cameraDelegate = cameraDelegate;
 
@@ -53,14 +52,14 @@ namespace T10::Levels::Cameras
 
 		bool OnEvent(const irr::SEvent& event) override
 		{
+			if (_cameraDelegate && _cameraDelegate->OnEvent(event)) {
+				return true;
+			}
+
 			if (event.EventType == irr::EEVENT_TYPE::EET_MOUSE_INPUT_EVENT)
 			{
 				_processMouseEvent(event.MouseInput.X, event.MouseInput.Y, event.MouseInput.isLeftPressed(), event.MouseInput.Wheel);
 
-				return true;
-			}
-
-			if (_cameraDelegate && _cameraDelegate->OnEvent(event)) {
 				return true;
 			}
 
@@ -96,7 +95,6 @@ namespace T10::Levels::Cameras
 			camera->setTarget(_lastTrackedPosition);
 
 			_isCameraUpdateRequired = false;
-			_isInitialized = true;
 		}
 
 		bool isEventReceiverEnabled() const override
@@ -179,7 +177,7 @@ namespace T10::Levels::Cameras
 		irr::core::vector2di _previousMousePoint;
 		irr::core::vector3df _position, _lastTrackedPosition;
 		float _minDistance, _distance, _maxDistance, _phi, _theta, _minTheta, _maxTheta, _upShift;
-		bool _isCameraUpdateRequired, _isInitialized;
+		bool _isCameraUpdateRequired;
 		boost::weak_ptr<irr::scene::ISceneNode> _target;
 		boost::shared_ptr<ICameraAnimatorDelegate> _cameraDelegate;
 	};
