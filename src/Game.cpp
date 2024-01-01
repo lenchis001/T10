@@ -23,6 +23,10 @@
 
 #include "DAL/ApiServices/WebSocketApiService.hpp"
 #include "BLL/Services/BattleState/BattleStateSynchronizationService.hpp"
+#include "BLL/Services/BattleState/EventRedirectionService.hpp"
+#include "BLL/Services/BattleState/Tracking/MessageHandling/MessageHandlerFactory.hpp"
+#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectObjectStateMessageHandler.hpp"
+#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectTankStateMessageHandler.hpp"
 
 boost::shared_ptr<T10::DAL::ApiServices::WebSocketApiService> socketPtr;
 
@@ -57,19 +61,28 @@ namespace T10
 		auto tankAssignmentService = boost::make_shared<BLL::Services::TankAssignment::TankAssignmentService>(tankAssignmentApiService);
 
 		auto webSocketApiService = socketPtr = boost::make_shared<DAL::ApiServices::WebSocketApiService>();
-		auto battleStateSynchronizationService = boost::make_shared<BLL::Services::BattleState::BattleStateSynchronizationService>(webSocketApiService);
 
-		auto connectFuture = webSocketApiService->connect("ws://localhost:8080");
-		connectFuture.then([&](auto f) {
-			socketPtr->setDataHandler([](auto message) {
+		auto messageHandlerFactory = boost::make_shared<BLL::Services::BattleState::Tracking::MessageHandling::MessageHandlerFactory>();
+		messageHandlerFactory->addHandler("correctObjectState", boost::make_shared<BLL::Services::BattleState::Tracking::MessageHandling::Handlers::CorrectObjectStateMessageHandler>(_sceneManager));
+		messageHandlerFactory->addHandler("correctTankState", boost::make_shared<BLL::Services::BattleState::Tracking::MessageHandling::Handlers::CorrectTankStateMessageHandler>(_sceneManager));
+
+		auto battleStateSynchronizationService = boost::make_shared<BLL::Services::BattleState::BattleStateSynchronizationService>(webSocketApiService, messageHandlerFactory);
+
+		auto eventRedirectionService = boost::make_shared<BLL::Services::BattleState::EventRedirectionService>(battleStateSynchronizationService);
+
+		battleStateSynchronizationService->joinBattle("ws://localhost:8080");
+
+		//auto connectFuture = webSocketApiService->connect("ws://localhost:8080");
+		//connectFuture.then([&](auto f) {
+		//	socketPtr->setDataHandler([](auto message) {
 	
-			std::cout << message << std::endl;
-				});
+		//	std::cout << message << std::endl;
+		//		});
 
 
 
-			socketPtr->send("Hell!");
-			});
+		//	socketPtr->send("Hell!");
+		//	});
 
 		boost::shared_ptr<Levels::Garage::BuyTankDialogController> buyTankDialogController
 			= boost::make_shared<Levels::Garage::BuyTankDialogController>(functionsProcessingAware, tankAssignmentService, _guiEnvironment);
@@ -97,7 +110,7 @@ namespace T10
 			_guiEnvironment,
 			functionsProcessingAware,
 			cursorControl,
-			battleStateSynchronizationService,
+			eventRedirectionService,
 			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		_onSwitchlevelRequested(LevelType::SIGN_IN, {});

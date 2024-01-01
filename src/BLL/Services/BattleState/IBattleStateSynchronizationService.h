@@ -8,9 +8,6 @@
 
 #include <boost/thread/future.hpp>
 
-#include "Tracking/ITrackableObject.h"
-#include "Tracking/ITrackableTank.h"
-
 namespace T10::BLL::Services::BattleState {
 	class IBattleStateSynchronizationService {
 	public:
@@ -21,9 +18,6 @@ namespace T10::BLL::Services::BattleState {
 		virtual void moveTurret(const irr::core::vector3df& rotation) = 0;
 
 		virtual void fire() = 0;
-
-		virtual void addTrackableObject(boost::shared_ptr<Tracking::ITrackableObject> object) = 0;
-		virtual void addTrackableTank(boost::shared_ptr<Tracking::ITrackableTank> tank) = 0;
 	};
 }
 

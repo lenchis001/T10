@@ -5,7 +5,7 @@
 
 #include "Levels/Cameras/ICameraAnimatorDelegate.h"
 
-namespace T10::Levels::Battle::Tank
+namespace T10::BLL::Services::BattleState
 {
 	class TankMovingAnimator : public Cameras::ICameraAnimatorDelegate
 	{
@@ -23,14 +23,10 @@ namespace T10::Levels::Battle::Tank
 			_previousAnimationTime = 0;
 		}
 
-		void moveX(int value)
+		void move(int moveX, int moveY)
 		{
-			_moveX = value;
-		}
-
-		void moveY(int value)
-		{
-			_moveY = value;
+			_moveX = moveX;
+			_moveY = moveY;
 		}
 
 		virtual void animateNode(irr::u32 timeMs)
@@ -42,7 +38,7 @@ namespace T10::Levels::Battle::Tank
 			_moveNode(_tankBody, _moveX * _movingSpeed * timeDelta);
 		}
 
-		virtual bool OnEvent(const irr::SEvent &event)
+		virtual bool OnEvent(const irr::SEvent& event)
 		{
 			return false;
 		}
@@ -65,7 +61,7 @@ namespace T10::Levels::Battle::Tank
 		void _moveNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::f32 value) const
 		{
 			auto position = node->getPosition();
-			const auto &rotation = node->getRotation();
+			const auto& rotation = node->getRotation();
 
 			auto index = (rotation.Y * -1) / (180 / irr::core::PI);
 

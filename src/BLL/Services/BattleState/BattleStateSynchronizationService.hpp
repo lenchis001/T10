@@ -11,11 +11,20 @@
 #include "BLL/Models/Tracking/Request/MoveTurretTrackingRequest.hpp"
 #include "BLL/Models/Tracking/Request/MoveBodyTrackingRequest.hpp"
 
+#include "Tracking/MessageHandling/IMessageHandlerFactory.h"
+
+#include "boost/json.hpp"
+
 namespace T10::BLL::Services::BattleState {
 	class BattleStateSynchronizationService : public IBattleStateSynchronizationService {
 	public:
-		BattleStateSynchronizationService(boost::shared_ptr<DAL::ApiServices::IWebSocketApiService> socketService) {
+		BattleStateSynchronizationService(
+			boost::shared_ptr<DAL::ApiServices::IWebSocketApiService> socketService,
+			boost::shared_ptr<Tracking::MessageHandling::IMessageHandlerFactory> messageHandlerFactory) {
 			_socketService = socketService;
+			_messageHandlerFactory = messageHandlerFactory;
+
+			_socketService->setDataHandler(boost::bind(&BattleStateSynchronizationService::_onMessageReceived, this, boost::placeholders::_1));
 		}
 
 		boost::future<void> joinBattle(const std::string& battleServer) {
@@ -23,9 +32,6 @@ namespace T10::BLL::Services::BattleState {
 		}
 
 		void leaveBattle() {
-			_trackableObjects.clear();
-			_trackableTanks.clear();
-
 			_socketService->disconnect();
 		}
 
@@ -49,20 +55,22 @@ namespace T10::BLL::Services::BattleState {
 
 			_socketService->send(model.toJson());
 		}
-
-		void addTrackableObject(boost::shared_ptr<Tracking::ITrackableObject> object) {
-			_trackableObjects.push_back(object);
-		}
-
-		void addTrackableTank(boost::shared_ptr<Tracking::ITrackableTank> tank) {
-			_trackableTanks.push_back(tank);
-		}
-
 	private:
-		boost::shared_ptr<DAL::ApiServices::IWebSocketApiService> _socketService;
+		void _onMessageReceived(const std::string& message) {
+			auto parsedMessage = boost::json::parse(message);
 
-		std::vector<boost::shared_ptr<Tracking::ITrackableObject>> _trackableObjects;
-		std::vector<boost::shared_ptr<Tracking::ITrackableTank>> _trackableTanks;
+			auto& name = parsedMessage.get_object()["name"].as_string();
+			auto& value = parsedMessage.get_object()["value"].as_object();
+
+			auto handler = _messageHandlerFactory->getHandler(name.data());
+
+			if (handler) {
+				handler->handle(value);
+			}
+		}
+
+		boost::shared_ptr<DAL::ApiServices::IWebSocketApiService> _socketService;
+		boost::shared_ptr<Tracking::MessageHandling::IMessageHandlerFactory> _messageHandlerFactory;
 	};
 }
 

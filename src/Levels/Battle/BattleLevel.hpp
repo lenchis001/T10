@@ -12,7 +12,7 @@
 #include "Levels/Mixins/TankLoadingAware.hpp"
 
 #include "BLL/Services/User/IUserService.h"
-#include "BLL/Services/BattleState/IBattleStateSynchronizationService.h"
+#include "BLL/Services/BattleState/EventRedirectionService.hpp"
 
 #include "Levels/Garage/BuyTankDialogController.hpp"
 
@@ -28,15 +28,13 @@ namespace T10::Levels::Battle
 			boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
 			boost::shared_ptr<irr::gui::ICursorControl> cursorControl,
-			boost::shared_ptr<BLL::Services::BattleState::IBattleStateSynchronizationService> battleStateSynchronizationService,
+			boost::shared_ptr<BLL::Services::BattleState::EventRedirectionService> eventRedirectionService,
 			SwitchLevelCallbackFunction switchLevelCallback)
 			: Mixins::TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
-			  Mixins::LoadingSplashAwareMixin(guiEnvironment)
+			Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_cursorControl = cursorControl;
-			_battleStateSynchronizationService = battleStateSynchronizationService;
-
-			_moveX = _moveY = 0;
+			_eventRedirectionService = eventRedirectionService;
 		}
 
 		void onLoadRequested() override
@@ -49,7 +47,7 @@ namespace T10::Levels::Battle
 		{
 		}
 
-		bool OnEvent(const irr::SEvent &event) override
+		bool OnEvent(const irr::SEvent& event) override
 		{
 			if (event.EventType == irr::EEVENT_TYPE::EET_GUI_EVENT)
 			{
@@ -86,41 +84,16 @@ namespace T10::Levels::Battle
 					break;
 				}
 			}
-			else if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT)
+			else if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT && _eventRedirectionService->OnEvent(event.KeyInput))
 			{
-				if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT)
-				{
-					switch (event.KeyInput.Key)
-					{
-					case irr::EKEY_CODE::KEY_KEY_W:
-						_moveX = 1;
-						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
-						return true;
-					case irr::EKEY_CODE::KEY_KEY_S:
-						_moveX = -1;
-						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
-						return true;
-					case irr::EKEY_CODE::KEY_KEY_A:
-						_moveY = -1;
-						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
-						return true;
-					case irr::EKEY_CODE::KEY_KEY_D:
-						_moveY = 1;
-						_battleStateSynchronizationService->moveBody(_moveX, _moveY);
-						return true;
-					default:
-						break;
-					}
-				}
+				return true;
 			}
 
 			return BaseLevel::OnEvent(event);
 		}
 
 	private:
-		int _moveX, _moveY;
-		boost::shared_ptr<BLL::Services::BattleState::IBattleStateSynchronizationService> _battleStateSynchronizationService;
-		boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> _tankAssignmentService;
+		boost::shared_ptr<BLL::Services::BattleState::EventRedirectionService> _eventRedirectionService;
 		boost::shared_ptr<irr::gui::ICursorControl> _cursorControl;
 
 		void _createUi()
@@ -141,6 +114,7 @@ namespace T10::Levels::Battle
 
 			auto tank = _loadTank(L"T-1");
 			auto body = _sceneManager->getSceneNodeFromName("Body", tank);
+			body->setID(123);
 
 			auto camera = _sceneManager->addCameraSceneNode();
 			// auto tankMovingAnimator = boost::make_shared<Tank::CurrentPlayerTankMovingAnimator>(body, 0.01F, 0.04F);

@@ -58,7 +58,7 @@ namespace T10::DAL::ApiServices {
 		}
 
 		void disconnect() override {
-			_client->close(_handler, websocketpp::close::status::normal, "");
+			_client->stop();
 		}
 	private:
 		websocketpp::connection_hdl _handler;

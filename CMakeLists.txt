@@ -32,6 +32,8 @@ if(MSVC)
         exec_program(${NUGET_EXE} ARGS install "boost_chrono-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
         exec_program(${NUGET_EXE} ARGS install "boost_locale-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
         exec_program(${NUGET_EXE} ARGS install "boost_random-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+        exec_program(${NUGET_EXE} ARGS install "boost_json-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+        exec_program(${NUGET_EXE} ARGS install "boost_container-vc143" -Version 1.82.0 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
     endif()
 
     include_directories(${CMAKE_BINARY_DIR}/packages/boost/lib/native/include)
@@ -42,6 +44,8 @@ if(MSVC)
         ${CMAKE_BINARY_DIR}/packages/boost_locale-vc143/lib/native
         ${CMAKE_BINARY_DIR}/packages/boost_iostreams-vc143/lib/native
         ${CMAKE_BINARY_DIR}/packages/boost_random-vc143/lib/native
+        ${CMAKE_BINARY_DIR}/packages/boost_json-vc143/lib/native
+        ${CMAKE_BINARY_DIR}/packages/boost_container-vc143/lib/native
     )
 else()
     include_directories($ENV{BOOST_ROOT})
