@@ -12,6 +12,7 @@
 #include "DAL/Services/IStorageService.h"
 
 #define TOKEN_STORAGE_KEY L"token"
+#define UNKNOWN_USER -1
 
 namespace T10::BLL::Services::User
 {
@@ -26,6 +27,8 @@ namespace T10::BLL::Services::User
             _userApiService = userApiService;
             _communicationService = communicationService;
             _storageService = storageService;
+
+            _currentUserId = UNKNOWN_USER;
         }
 
         boost::shared_ptr<Models::DataActionResult<Models::User::Info>> getInfo() override
@@ -35,10 +38,14 @@ namespace T10::BLL::Services::User
             Models::ErrorCode bllErrorCode = _toBllErrorCode(dalUserInfoResult.getError());
             Models::User::Info bllUserInfo = _toBllUserInfo(dalUserInfoResult.getData());
 
+            if (bllErrorCode == Models::ErrorCode::OK) {
+                _currentUserId = bllUserInfo.getId();
+            }
+
             return boost::make_shared<Models::DataActionResult<Models::User::Info>>(bllErrorCode, bllUserInfo);
         }
 
-        virtual Models::ActionResult signIn(std::wstring email, std::wstring password)
+        Models::ActionResult signIn(std::wstring email, std::wstring password) override
         {
             DAL::Models::DataActionResult<DAL::Models::User::SignInInfo> dalSignInInfoResult = _userApiService->signIn(email, password);
 
@@ -56,7 +63,7 @@ namespace T10::BLL::Services::User
             return Models::ActionResult(bllErrorCode);
         }
 
-        virtual Models::ActionResult signIn() {
+        Models::ActionResult signIn() override {
             auto token = _storageService->get(TOKEN_STORAGE_KEY);
 
             if (token.empty()) {
@@ -75,14 +82,25 @@ namespace T10::BLL::Services::User
 
             return result;
         }
+
+        int getCurrentUserId() {
+            if (_currentUserId == UNKNOWN_USER) {
+                this->getInfo();
+            }
+
+            return _currentUserId;
+        }
     private:
         boost::shared_ptr<DAL::ApiServices::User::IUserApiService> _userApiService;
         boost::shared_ptr<DAL::ApiServices::ICommunicationService> _communicationService;
         boost::shared_ptr<DAL::Services::IStorageService> _storageService;
 
+        int _currentUserId;
+
         inline Models::User::Info _toBllUserInfo(const DAL::Models::User::Info &dalUserInfo)
         {
             return Models::User::Info(
+                dalUserInfo.getId(),
                 dalUserInfo.getEmail(),
                 dalUserInfo.getName(),
                 dalUserInfo.getMoney(),

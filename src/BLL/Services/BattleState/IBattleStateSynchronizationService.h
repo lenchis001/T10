@@ -11,13 +11,10 @@
 namespace T10::BLL::Services::BattleState {
 	class IBattleStateSynchronizationService {
 	public:
-		virtual boost::future<void> joinBattle(const std::string& battleServer) = 0;
+		virtual boost::future<void> joinBattle(const std::string& battleServer, const std::string& apiKey) = 0;
 		virtual void leaveBattle() = 0;
 
-		virtual boost::future<void> moveBody(int left, int right) = 0;
-		virtual void moveTurret(const irr::core::vector3df& rotation) = 0;
-
-		virtual void fire() = 0;
+		virtual bool OnEvent(const irr::SEvent::SKeyInput& eventData) = 0;
 	};
 }
 

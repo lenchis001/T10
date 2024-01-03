@@ -14,9 +14,10 @@ namespace T10::Levels::SignIn
             boost::shared_ptr<irr::scene::ISceneManager> sceneManager,
             boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
             boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
+            boost::shared_ptr<BLL::Services::ResourceLoading::IResourceLoadingService> resourceLoadingService,
             boost::shared_ptr<BLL::Services::User::IUserService> userService,
             SwitchLevelCallbackFunction switchLevelCallback)
-            : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback)
+            : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, resourceLoadingService, switchLevelCallback)
         {
             _userService = userService;
 
@@ -25,7 +26,7 @@ namespace T10::Levels::SignIn
         virtual void onLoadRequested() override
         {
             std::wstring path = L"Resources/Levels/SignIn/GUI/SignIn.xml";
-            _loadGui(path);
+            _resourceLoadingService->loadGui(path);
 
             if (_userService->signIn().getError() == BLL::Models::ErrorCode::OK) {
                 _goToGarage();

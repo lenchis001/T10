@@ -25,35 +25,42 @@ namespace T10::BLL::Services::BattleState {
 			_messageHandlerFactory = messageHandlerFactory;
 
 			_socketService->setDataHandler(boost::bind(&BattleStateSynchronizationService::_onMessageReceived, this, boost::placeholders::_1));
+
+			_moveX = _moveY = _lastReportedMoveX = _lastReportedMoveY = 0;
 		}
 
-		boost::future<void> joinBattle(const std::string& battleServer) {
-			return _socketService->connect(battleServer);
+		boost::future<void> joinBattle(const std::string& battleServer, const std::string& apiKey) {
+			return _socketService->connect(battleServer, apiKey);
 		}
 
 		void leaveBattle() {
 			_socketService->disconnect();
 		}
 
-		boost::future<void> moveBody(int x, int y) {
-			auto model = Models::Tracking::Request::MoveBodyTrackingRequest(x, y);
+		bool OnEvent(const irr::SEvent::SKeyInput& eventData) override {
+			switch (eventData.Key)
+			{
+			case irr::EKEY_CODE::KEY_KEY_W:
+				_moveX = eventData.PressedDown;
+				_reportMoveX();
+				return true;
+			case irr::EKEY_CODE::KEY_KEY_S:
+				_moveX = -eventData.PressedDown;
+				_reportMoveX();
+				return true;
+			case irr::EKEY_CODE::KEY_KEY_A:
+				_moveY = -eventData.PressedDown;
+				_reportMoveY();
+				return true;
+			case irr::EKEY_CODE::KEY_KEY_D:
+				_moveY = eventData.PressedDown;
+				_reportMoveY();
+				return true;
+			default:
+				break;
+			}
 
-			_socketService->send(model.toJson());
-
-			boost::promise<void> p;
-			return p.get_future();
-		}
-
-		void moveTurret(const irr::core::vector3df& rotation) {
-			auto model = Models::Tracking::Request::MoveTurretTrackingRequest(rotation);
-
-			_socketService->send(model.toJson());
-		}
-
-		void fire() {
-			auto model = Models::Tracking::Request::FireTrackingRequest();
-
-			_socketService->send(model.toJson());
+			return false;
 		}
 	private:
 		void _onMessageReceived(const std::string& message) {
@@ -68,6 +75,43 @@ namespace T10::BLL::Services::BattleState {
 				handler->handle(value);
 			}
 		}
+
+		boost::future<void> _moveBody(int x, int y) {
+			auto model = Models::Tracking::Request::MoveBodyTrackingRequest(x, y);
+
+			_socketService->send(model.toJson());
+
+			boost::promise<void> p;
+			return p.get_future();
+		}
+
+		void _reportMoveX() {
+			if (_lastReportedMoveX != _moveX) {
+				_moveBody(_moveX, _moveY);
+				_lastReportedMoveX = _moveX;
+			}
+		}
+
+		void _reportMoveY() {
+			if (_lastReportedMoveY != _moveY) {
+				_moveBody(_moveX, _moveY);
+				_lastReportedMoveY = _moveY;
+			}
+		}
+
+		void _moveTurret(const irr::core::vector3df& rotation) {
+			auto model = Models::Tracking::Request::MoveTurretTrackingRequest(rotation);
+
+			_socketService->send(model.toJson());
+		}
+
+		void _fire() {
+			auto model = Models::Tracking::Request::FireTrackingRequest();
+
+			_socketService->send(model.toJson());
+		}
+
+		int _moveX, _moveY, _lastReportedMoveX, _lastReportedMoveY;
 
 		boost::shared_ptr<DAL::ApiServices::IWebSocketApiService> _socketService;
 		boost::shared_ptr<Tracking::MessageHandling::IMessageHandlerFactory> _messageHandlerFactory;

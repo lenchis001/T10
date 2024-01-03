@@ -27,8 +27,8 @@ namespace T10::BLL::Services::BattleState::Tracking::MessageHandling::Handlers {
 			boost::shared_ptr<irr::scene::ISceneNode> targetObject = _sceneManager->getSceneNodeFromId(id);
 
 			if (targetObject) {
-				_applyPosition(position, targetObject, highPrecision);
-				_applyRotation(rotation, targetObject, highPrecision);
+				/*_applyPosition(position, targetObject, highPrecision);
+				_applyRotation(rotation, targetObject, highPrecision);*/
 
 				auto tankMovingAnimator = boost::dynamic_pointer_cast<TankMovingAnimator>(_getTankMovingAnimator(targetObject));
 
@@ -50,7 +50,7 @@ namespace T10::BLL::Services::BattleState::Tracking::MessageHandling::Handlers {
 			auto& animators = sceneNode->getAnimators();
 
 			auto animatorIterator = std::find_if(animators.begin(), animators.end(), [](auto& animator) {
-				return false;
+				return typeid(*animator) == typeid(TankMovingAnimator);
 			});
 
 			return animatorIterator != animators.end() ? *animatorIterator : nullptr;

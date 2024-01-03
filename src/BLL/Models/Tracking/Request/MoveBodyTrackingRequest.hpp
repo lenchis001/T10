@@ -19,7 +19,7 @@ namespace T10::BLL::Models::Tracking::Request {
 						"\"name\":\"moveBody\","
 						"\"value\": { "
 							"\"x\":" + std::to_string(_x) + ","
-							"\"y\":" + std::to_string(_y) + ","
+							"\"y\":" + std::to_string(_y) + ""
 						"}"
 					"}";
 		}

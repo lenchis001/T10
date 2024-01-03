@@ -15,6 +15,8 @@
 #include "ILevel.h"
 #include "Types.h"
 
+#include "BLL/Services/ResourceLoading/IResourceLoadingService.h"
+
 using namespace std;
 
 namespace T10::Levels
@@ -28,9 +30,11 @@ namespace T10::Levels
 			boost::shared_ptr<irr::scene::ISceneManager> sceneManager,
 			boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
+			boost::shared_ptr<BLL::Services::ResourceLoading::IResourceLoadingService> resourceLoadingService,
 			SwitchLevelCallbackFunction switchLevelCallback) : _sceneManager(sceneManager),
 															   _guiEnvironment(guiEnvironment),
 															   _functionsProcessingAware(functionsProcessingAware),
+															   _resourceLoadingService(resourceLoadingService),
 															   _switchLevelCallback(switchLevelCallback) {}
 
 		virtual void load()
@@ -64,28 +68,6 @@ namespace T10::Levels
 			_switchLevelCallback(type, params);
 		}
 
-		bool _loadScene(std::wstring &path, boost::shared_ptr<irr::scene::ISceneNode> root = nullptr)
-		{
-			auto absolutePath = boost::filesystem::absolute(path);
-			_patchWorkingDirectory(absolutePath);
-
-			auto result = _sceneManager->loadScene(absolutePath.c_str(), nullptr, root);
-
-			_unpatchWorkingDirectory();
-
-			return result;
-		}
-
-		void _loadGui(std::wstring &path)
-		{
-			auto absolutePath = boost::filesystem::absolute(path);
-			_patchWorkingDirectory(absolutePath);
-
-			_guiEnvironment->loadGUI(absolutePath.c_str());
-
-			_unpatchWorkingDirectory();
-		}
-
 		void _exitWithMessage(std::wstring &message)
 		{
 			_guiEnvironment->clear();
@@ -96,25 +78,10 @@ namespace T10::Levels
 		boost::shared_ptr<irr::scene::ISceneManager> _sceneManager;
 		boost::shared_ptr<irr::gui::IGUIEnvironment> _guiEnvironment;
 		boost::shared_ptr<IFunctionsProcessingAware> _functionsProcessingAware;
-
+		boost::shared_ptr<BLL::Services::ResourceLoading::IResourceLoadingService> _resourceLoadingService;
 	private:
-		void _patchWorkingDirectory(const boost::filesystem::path &pathToFile)
-		{
-			_workingDirectoryBuffer = boost::filesystem::current_path().wstring();
-
-			auto levelFileDirectory = pathToFile.parent_path();
-
-			boost::filesystem::current_path(levelFileDirectory);
-		}
-
-		void _unpatchWorkingDirectory()
-		{
-			boost::filesystem::current_path(_workingDirectoryBuffer.c_str());
-		}
-
 		SwitchLevelCallbackFunction _switchLevelCallback;
-		std::wstring _workingDirectoryBuffer;
 	};
 }
 
-#endif
+#endif // BASE_LEVEL

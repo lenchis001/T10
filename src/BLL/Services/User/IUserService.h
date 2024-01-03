@@ -17,6 +17,8 @@ namespace T10::BLL::Services::User
         virtual Models::ActionResult signIn(std::wstring email, std::wstring password) = 0;
 
         virtual Models::ActionResult signIn() = 0;
+
+        virtual int getCurrentUserId() = 0;
     };
 }
 

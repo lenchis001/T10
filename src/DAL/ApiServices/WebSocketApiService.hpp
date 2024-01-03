@@ -16,7 +16,7 @@ typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 namespace T10::DAL::ApiServices {
 	class WebSocketApiService : public IWebSocketApiService, public boost::enable_shared_from_this<WebSocketApiService> {
 	public:
-		boost::future<void> connect(const std::string& host) override {
+		boost::future<void> connect(const std::string& host, const std::string& apiKey) override {
 			// Create a client endpoint
 			_client = boost::make_shared<client>();
 
@@ -39,6 +39,7 @@ namespace T10::DAL::ApiServices {
 
 			websocketpp::lib::error_code ec;
 			client::connection_ptr con = _client->get_connection(host, ec);
+			con->append_header("apiKey", apiKey);
 
 			_client->connect(con);
 
@@ -67,6 +68,8 @@ namespace T10::DAL::ApiServices {
 
 		boost::shared_ptr<boost::thread> _socketThread;
 		boost::promise<void> _connectPromise;
+
+		std::string _apiKey;
 	};
 }
 

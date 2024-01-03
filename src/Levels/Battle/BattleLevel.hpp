@@ -9,10 +9,9 @@
 #include "Levels/BaseLevel.hpp"
 
 #include "Levels/Mixins/LoadingSplashAwareMixing.hpp"
-#include "Levels/Mixins/TankLoadingAware.hpp"
 
 #include "BLL/Services/User/IUserService.h"
-#include "BLL/Services/BattleState/EventRedirectionService.hpp"
+#include "BLL/Services/BattleState/IBattleStateSynchronizationService.h"
 
 #include "Levels/Garage/BuyTankDialogController.hpp"
 
@@ -20,27 +19,30 @@ namespace T10::Levels::Battle
 {
 #define AIM_CONTROL 1
 
-	class BattleLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
+	class BattleLevel : public BaseLevel, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
 	{
 	public:
 		BattleLevel(
 			boost::shared_ptr<irr::scene::ISceneManager> sceneManager,
 			boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
+			boost::shared_ptr<BLL::Services::ResourceLoading::IResourceLoadingService> resourceLoadingService,
 			boost::shared_ptr<irr::gui::ICursorControl> cursorControl,
-			boost::shared_ptr<BLL::Services::BattleState::EventRedirectionService> eventRedirectionService,
+			boost::shared_ptr<BLL::Services::BattleState::IBattleStateSynchronizationService> battleStateSynchronizationService,
 			SwitchLevelCallbackFunction switchLevelCallback)
-			: Mixins::TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
+			: BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, resourceLoadingService, switchLevelCallback),
 			Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_cursorControl = cursorControl;
-			_eventRedirectionService = eventRedirectionService;
+			_battleStateSynchronizationService = battleStateSynchronizationService;
 		}
 
 		void onLoadRequested() override
 		{
 			_createUi();
 			_createScene();
+
+			_battleStateSynchronizationService->joinBattle("ws://localhost:8080", "33e9e476-69c9-4bc3-9eb5-3ff0de6cebee");
 		}
 
 		void onUnloadRequested() override
@@ -84,7 +86,7 @@ namespace T10::Levels::Battle
 					break;
 				}
 			}
-			else if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT && _eventRedirectionService->OnEvent(event.KeyInput))
+			else if (event.EventType == irr::EEVENT_TYPE::EET_KEY_INPUT_EVENT && _battleStateSynchronizationService->OnEvent(event.KeyInput))
 			{
 				return true;
 			}
@@ -93,34 +95,23 @@ namespace T10::Levels::Battle
 		}
 
 	private:
-		boost::shared_ptr<BLL::Services::BattleState::EventRedirectionService> _eventRedirectionService;
+		boost::shared_ptr<BLL::Services::BattleState::IBattleStateSynchronizationService> _battleStateSynchronizationService;
 		boost::shared_ptr<irr::gui::ICursorControl> _cursorControl;
 
 		void _createUi()
 		{
 			std::wstring path = L"Resources/GUI/Battle/Status.xml";
-			_loadGui(path);
+			_resourceLoadingService->loadGui(path);
 
 			path = L"Resources/GUI/Battle/Aim.xml";
-			_loadGui(path);
+			_resourceLoadingService->loadGui(path);
 
 			_centerAim();
 		}
 
 		void _createScene()
 		{
-			std::wstring path = L"Resources/Levels/Testgrad/Testgrad.irr";
-			_loadScene(path);
-
-			auto tank = _loadTank(L"T-1");
-			auto body = _sceneManager->getSceneNodeFromName("Body", tank);
-			body->setID(123);
-
-			auto camera = _sceneManager->addCameraSceneNode();
-			// auto tankMovingAnimator = boost::make_shared<Tank::CurrentPlayerTankMovingAnimator>(body, 0.01F, 0.04F);
-
-			camera->addAnimator(
-				boost::make_shared<T10::Levels::Cameras::GarageCameraAnimator>(body, 5, 7, 15, 0.2F, irr::core::HALF_PI + 0.2, 300, 0.85F, 1.2F, 3, nullptr));
+			
 		}
 
 		void _centerAim()

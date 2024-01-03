@@ -7,18 +7,16 @@
 
 namespace T10::BLL::Services::BattleState
 {
-	class TankMovingAnimator : public Cameras::ICameraAnimatorDelegate
+	class TankMovingAnimator : public irr::scene::ISceneNodeAnimator
 	{
 	public:
-		TankMovingAnimator(boost::shared_ptr<irr::scene::ISceneNode> tankBody, float movingSpeed, float rotationSpeed)
+		TankMovingAnimator(float movingSpeed, float rotationSpeed)
 		{
 			_moveX = false;
 			_moveY = false;
 
 			_movingSpeed = movingSpeed;
 			_rotationSpeed = rotationSpeed;
-
-			_tankBody = tankBody;
 
 			_previousAnimationTime = 0;
 		}
@@ -29,23 +27,21 @@ namespace T10::BLL::Services::BattleState
 			_moveY = moveY;
 		}
 
-		virtual void animateNode(irr::u32 timeMs)
+		void animateNode(boost::shared_ptr<irr::scene::ISceneNode> node, irr::u32 timeMs) override
 		{
 			auto timeDelta = timeMs - _previousAnimationTime;
 			_previousAnimationTime = timeMs;
 
-			_rotateNode(_tankBody, _moveY * _rotationSpeed * timeDelta);
-			_moveNode(_tankBody, _moveX * _movingSpeed * timeDelta);
+			_rotateNode(node, _moveY * _rotationSpeed * timeDelta);
+			_moveNode(node, _moveX * _movingSpeed * timeDelta);
 		}
 
-		virtual bool OnEvent(const irr::SEvent& event)
-		{
-			return false;
+		boost::shared_ptr<ISceneNodeAnimator> createClone(boost::shared_ptr<irr::scene::ISceneNode> node,
+			boost::shared_ptr<irr::scene::ISceneManager> newManager = 0) {
+			return nullptr;
 		}
-
 	private:
 		int _moveX, _moveY;
-		boost::shared_ptr<irr::scene::ISceneNode> _tankBody;
 		float _movingSpeed, _rotationSpeed;
 		irr::u32 _previousAnimationTime;
 

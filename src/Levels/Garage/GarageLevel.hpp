@@ -10,7 +10,6 @@
 #include "Levels/BaseLevel.hpp"
 
 #include "Levels/Mixins/LoadingSplashAwareMixing.hpp"
-#include "Levels/Mixins/TankLoadingAware.hpp"
 
 #include "BLL/Services/User/IUserService.h"
 #include "BLL/Services/Tank/ITankService.h"
@@ -31,18 +30,19 @@ namespace T10::Levels::Garage
 #define BUY_TANK_CONTROL 5
 #define GARAGE_UI 7
 
-	class GarageLevel : public Mixins::TankLoadingAware, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
+	class GarageLevel : public BaseLevel, public Mixins::LoadingSplashAwareMixin, public boost::enable_shared_from_this<ILevel>
 	{
 	public:
 		GarageLevel(
 			boost::shared_ptr<irr::scene::ISceneManager> sceneManager,
 			boost::shared_ptr<irr::gui::IGUIEnvironment> guiEnvironment,
 			boost::shared_ptr<IFunctionsProcessingAware> functionsProcessingAware,
+			boost::shared_ptr<BLL::Services::ResourceLoading::IResourceLoadingService> resourceLoadingService,
 			boost::shared_ptr<BLL::Services::User::IUserService> userService,
 			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
 			boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> tankAssignemntService,
 			boost::shared_ptr<BuyTankDialogController> buyTankDialogController,
-			SwitchLevelCallbackFunction switchLevelCallback) : TankLoadingAware(sceneManager, guiEnvironment, functionsProcessingAware, switchLevelCallback),
+			SwitchLevelCallbackFunction switchLevelCallback) : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, resourceLoadingService, switchLevelCallback),
 			Mixins::LoadingSplashAwareMixin(guiEnvironment)
 		{
 			_userService = userService;
@@ -127,7 +127,7 @@ namespace T10::Levels::Garage
 		void _createUi()
 		{
 			std::wstring path = L"Resources/Levels/Garage/GUI/Garage.xml";
-			_loadGui(path);
+			_resourceLoadingService->loadGui(path);
 
 			auto rootGuiElement = _guiEnvironment->getRootGUIElement();
 			_garageGui = rootGuiElement->getElementFromId(GARAGE_UI);
@@ -151,7 +151,7 @@ namespace T10::Levels::Garage
 		void _createScene()
 		{
 			std::wstring path = L"Resources/Levels/Garage/Garage.irr";
-			_loadScene(path);
+			_resourceLoadingService->loadScene(path);
 
 			auto target = _sceneManager->addEmptySceneNode();
 
@@ -181,7 +181,7 @@ namespace T10::Levels::Garage
 				return t.getId() == tankAssignment.getTankId();
 			}));
 
-			_loadTank(tank.getName(), SELECTED_TANK_OBJECT);
+			_resourceLoadingService->loadTank(tank.getName(), SELECTED_TANK_OBJECT);
 		}
 
 		void _showTanksBuyDialog()
@@ -191,7 +191,7 @@ namespace T10::Levels::Garage
 			_showLoadingSpalsh();
 
 			std::wstring path = L"Resources/Levels/Garage/GUI/TankBuy.xml";
-			_loadGui(path);
+			_resourceLoadingService->loadGui(path);
 			_buyTankDialogController->show(_allTanks, boost::bind(&GarageLevel::_onBuyTankDialogHidden, this));
 
 			_hideLoadingSpalsh();

@@ -12,7 +12,7 @@
 namespace T10::DAL::ApiServices {
 	class IWebSocketApiService {
 	public:
-		virtual boost::future<void> connect(const std::string& host) = 0;
+		virtual boost::future<void> connect(const std::string& host, const std::string& apiKey) = 0;
 		
 		virtual void send(const std::string& data) = 0;
 
