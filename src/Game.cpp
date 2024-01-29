@@ -1,33 +1,33 @@
 ﻿#include "boost/bind.hpp"
 
-#include "Levels/Garage/GarageLevel.hpp"
-#include "Levels/SignIn/SignInLevel.hpp"
-#include "Levels/Battle/BattleLevel.hpp"
+#include "Levels/Garage/GarageLevel.h"
+#include "Levels/SignIn/SignInLevel.h"
+#include "Levels/Battle/BattleLevel.h"
 
-#include "Levels/Garage/BuyTankDialogController.hpp"
+#include "Levels/Garage/BuyTankDialogController.h"
 
 #include "Game.h"
 
-#include "BLL/Services/User/UserService.hpp"
-#include "DAL/ApiServices/User/UserApiService.hpp"
+#include "BLL/Services/User/UserService.h"
+#include "DAL/ApiServices/User/UserApiService.h"
 
-#include "BLL/Services/Tank/TankService.hpp"
-#include "DAL/ApiServices/Tank/TankApiService.hpp"
+#include "BLL/Services/Tank/TankService.h"
+#include "DAL/ApiServices/Tank/TankApiService.h"
 
-#include "BLL/Services/TankAssignment/TankAssignmentService.hpp"
-#include "DAL/ApiServices/TankAssignment/TankAssignmentApiService.hpp"
+#include "BLL/Services/TankAssignment/TankAssignmentService.h"
+#include "DAL/ApiServices/TankAssignment/TankAssignmentApiService.h"
 
-#include "DAL/ApiServices/CommunicationService.hpp"
-#include "DAL/Services/StorageService.hpp"
-#include "DAL/ApiServices/WebSocketApiService.hpp"
+#include "DAL/ApiServices/CommunicationService.h"
+#include "DAL/Services/StorageService.h"
+#include "DAL/ApiServices/WebSocketApiService.h"
 
-#include "BLL/Services/ResourceLoading/ResourceLoadingService.hpp"
+#include "BLL/Services/ResourceLoading/ResourceLoadingService.h"
 
-#include "BLL/Services/BattleState/BattleStateSynchronizationService.hpp"
-#include "BLL/Services/BattleState/Tracking/MessageHandling/MessageHandlerFactory.hpp"
-#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectObjectStateMessageHandler.hpp"
-#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectTankStateMessageHandler.hpp"
-#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/SetupSceneMessageHandler.hpp"
+#include "BLL/Services/BattleState/BattleStateSynchronizationService.h"
+#include "BLL/Services/BattleState/Tracking/MessageHandling/MessageHandlerFactory.h"
+#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectObjectStateMessageHandler.h"
+#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectTankStateMessageHandler.h"
+#include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/SetupSceneMessageHandler.h"
 
 boost::shared_ptr<T10::DAL::ApiServices::WebSocketApiService> socketPtr;
 
@@ -74,6 +74,8 @@ namespace T10
 
 		boost::shared_ptr<Levels::Garage::BuyTankDialogController> buyTankDialogController
 			= boost::make_shared<Levels::Garage::BuyTankDialogController>(functionsProcessingAware, tankAssignmentService, _guiEnvironment);
+		/*boost::shared_ptr<Levels::Garage::BattleQueueDialogController> battleQueueDialogController
+			= boost::make_shared<Levels::Garage::BattleQueueDialogController>(functionsProcessingAware, _guiEnvironment);*/
 
 		_addLevel(LevelType::SIGN_IN, boost::make_shared<SignIn::SignInLevel>(
 			_sceneManager,
@@ -92,6 +94,7 @@ namespace T10
 			tankService,
 			tankAssignmentService,
 			buyTankDialogController,
+			//battleQueueDialogController,
 			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		auto cursorControl = device->getCursorControl();
