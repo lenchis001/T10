@@ -12,7 +12,10 @@ BattleStateSynchronizationService::BattleStateSynchronizationService(
 }
 
 boost::future<void> BattleStateSynchronizationService::joinBattle(const std::string& battleServer, const std::string& apiKey) {
-	return _socketService->connect(battleServer, apiKey);
+	std::map<std::string, std::string> headers;
+	headers["Authorization"] = apiKey;
+
+	return _socketService->connect(battleServer, headers);
 }
 
 void BattleStateSynchronizationService::leaveBattle() {

@@ -4,7 +4,7 @@
 namespace T10::Levels {
 	enum LevelType {
 		SIGN_IN,
-		MENU,
+		GARAGE,
 		GAME
 	};
 }

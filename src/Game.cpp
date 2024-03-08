@@ -20,16 +20,15 @@
 #include "DAL/ApiServices/CommunicationService.h"
 #include "DAL/Services/StorageService.h"
 #include "DAL/ApiServices/WebSocketApiService.h"
+#include "DAL/ApiServices/MatchMaking/MatchMakingApiService.h"
 
 #include "BLL/Services/ResourceLoading/ResourceLoadingService.h"
-
+#include "BLL/Services/MatchMaking/MatchMakingService.h"
 #include "BLL/Services/BattleState/BattleStateSynchronizationService.h"
 #include "BLL/Services/BattleState/Tracking/MessageHandling/MessageHandlerFactory.h"
 #include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectObjectStateMessageHandler.h"
 #include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/CorrectTankStateMessageHandler.h"
 #include "BLL/Services/BattleState/Tracking/MessageHandling/Handlers/SetupSceneMessageHandler.h"
-
-boost::shared_ptr<T10::DAL::ApiServices::WebSocketApiService> socketPtr;
 
 namespace T10
 {
@@ -63,19 +62,23 @@ namespace T10
 
 		auto resourceLoadingService = boost::make_shared<BLL::Services::ResourceLoading::ResourceLoadingService>(_sceneManager, _guiEnvironment);
 
-		auto webSocketApiService = socketPtr = boost::make_shared<DAL::ApiServices::WebSocketApiService>();
+		auto matchMakingStateWebSocketApiService = boost::make_shared<DAL::ApiServices::WebSocketApiService>();
+		auto matchMakingApiService = boost::make_shared<DAL::ApiServices::MatchMaking::MatchMakingApiService>(storageService, matchMakingStateWebSocketApiService);
+		auto matchMakingService = boost::make_shared<BLL::Services::MatchMaking::MatchMakingService>(matchMakingApiService, storageService);
+
+		auto battleStateWebSocketApiService = boost::make_shared<DAL::ApiServices::WebSocketApiService>();
 
 		auto messageHandlerFactory = boost::make_shared<BLL::Services::BattleState::Tracking::MessageHandling::MessageHandlerFactory>();
 		messageHandlerFactory->addHandler("correctObjectState", boost::make_shared<BLL::Services::BattleState::Tracking::MessageHandling::Handlers::CorrectObjectStateMessageHandler>(_sceneManager));
 		messageHandlerFactory->addHandler("correctTankState", boost::make_shared<BLL::Services::BattleState::Tracking::MessageHandling::Handlers::CorrectTankStateMessageHandler>(_sceneManager));
 		messageHandlerFactory->addHandler("setupScene", boost::make_shared<BLL::Services::BattleState::Tracking::MessageHandling::Handlers::SetupSceneMessageHandler>(functionsProcessingAware, _sceneManager, resourceLoadingService, userService));
 
-		auto battleStateSynchronizationService = boost::make_shared<BLL::Services::BattleState::BattleStateSynchronizationService>(webSocketApiService, messageHandlerFactory);
+		auto battleStateSynchronizationService = boost::make_shared<BLL::Services::BattleState::BattleStateSynchronizationService>(battleStateWebSocketApiService, messageHandlerFactory);
 
+		boost::shared_ptr<Levels::Garage::StartBattleDialogController> startBattleDialogController
+			= boost::make_shared<Levels::Garage::StartBattleDialogController>(functionsProcessingAware, matchMakingService, _guiEnvironment);
 		boost::shared_ptr<Levels::Garage::BuyTankDialogController> buyTankDialogController
 			= boost::make_shared<Levels::Garage::BuyTankDialogController>(functionsProcessingAware, tankAssignmentService, _guiEnvironment);
-		/*boost::shared_ptr<Levels::Garage::BattleQueueDialogController> battleQueueDialogController
-			= boost::make_shared<Levels::Garage::BattleQueueDialogController>(functionsProcessingAware, _guiEnvironment);*/
 
 		_addLevel(LevelType::SIGN_IN, boost::make_shared<SignIn::SignInLevel>(
 			_sceneManager,
@@ -85,7 +88,10 @@ namespace T10
 			userService,
 			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
-		_addLevel(LevelType::MENU, boost::make_shared<Garage::GarageLevel>(
+		matchMakingService->setBattleStartedHandler([=]() {
+			_onSwitchlevelRequested(LevelType::GAME, {});
+			});
+		_addLevel(LevelType::GARAGE, boost::make_shared<Garage::GarageLevel>(
 			_sceneManager,
 			_guiEnvironment,
 			functionsProcessingAware,
@@ -93,8 +99,8 @@ namespace T10
 			userService,
 			tankService,
 			tankAssignmentService,
+			startBattleDialogController,
 			buyTankDialogController,
-			//battleQueueDialogController,
 			boost::bind(&Game::_onSwitchlevelRequested, this, boost::placeholders::_1, boost::placeholders::_2)));
 
 		auto cursorControl = device->getCursorControl();

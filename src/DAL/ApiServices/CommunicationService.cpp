@@ -1,5 +1,7 @@
 #include "CommunicationService.h"
 
+#include "Utils/Utils.h"
+
 using namespace T10::DAL::Models;
 using namespace T10::DAL::ApiServices;
 

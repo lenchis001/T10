@@ -8,7 +8,6 @@
 #include "DAL/ApiServices/ICommunicationService.h"
 #include "DAL/Services/IStorageService.h"
 
-#define TOKEN_STORAGE_KEY L"token"
 #define UNKNOWN_USER -1
 
 namespace T10::BLL::Services::User

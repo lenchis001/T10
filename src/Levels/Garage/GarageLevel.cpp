@@ -12,6 +12,7 @@ GarageLevel::GarageLevel(
 	boost::shared_ptr<BLL::Services::User::IUserService> userService,
 	boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
 	boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> tankAssignemntService,
+	boost::shared_ptr<StartBattleDialogController> startBattleDialogController,
 	boost::shared_ptr<BuyTankDialogController> buyTankDialogController,
 	SwitchLevelCallbackFunction switchLevelCallback) : BaseLevel(sceneManager, guiEnvironment, functionsProcessingAware, resourceLoadingService, switchLevelCallback),
 	Mixins::LoadingSplashAwareMixin(guiEnvironment)
@@ -20,6 +21,7 @@ GarageLevel::GarageLevel(
 	_tankService = tankService;
 	_tankAssignmentService = tankAssignemntService;
 
+	_startBattleDialogController = startBattleDialogController;
 	_buyTankDialogController = buyTankDialogController;
 }
 
@@ -36,6 +38,10 @@ void GarageLevel::onUnloadRequested()
 
 bool GarageLevel::OnEvent(const irr::SEvent& event)
 {
+	if (_startBattleDialogController->OnEvent(event)) {
+		return true;
+	}
+
 	if (_buyTankDialogController->OnEvent(event)) {
 		return true;
 	}
@@ -51,7 +57,7 @@ bool GarageLevel::OnEvent(const irr::SEvent& event)
 			switch (event.GUIEvent.Caller->getID())
 			{
 			case GO_TO_BATTLE_CONTROL:
-				_goToBattle();
+				_showStartBattleDialog();
 				return true;
 
 			case BUY_TANK_CONTROL:
@@ -142,6 +148,19 @@ void GarageLevel::_onTankSelected()
 	_resourceLoadingService->loadTank(tank.getName(), SELECTED_TANK_OBJECT);
 }
 
+void GarageLevel::_showStartBattleDialog()
+{
+	_lockGarageGui();
+
+	_showLoadingSpalsh();
+
+	std::wstring path = L"Resources/Levels/Garage/GUI/StartBattle.xml";
+	_resourceLoadingService->loadGui(path);
+	_startBattleDialogController->show(2, boost::bind(&GarageLevel::_onStartBattleDialogHidden, this));
+
+	_hideLoadingSpalsh();
+}
+
 void GarageLevel::_showTanksBuyDialog()
 {
 	_lockGarageGui();
@@ -160,6 +179,10 @@ void GarageLevel::_lockGarageGui()
 	_garageGui->setVisible(false);
 
 	_tankService->getAll();
+}
+
+void GarageLevel::_onStartBattleDialogHidden() {
+	_garageGui->setVisible(true);
 }
 
 void GarageLevel::_onBuyTankDialogHidden()

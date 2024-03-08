@@ -5,6 +5,7 @@
 #define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
 
 #include "string"
+#include "map"
 
 #include <boost/thread/future.hpp>
 #include <boost/function.hpp>
@@ -12,7 +13,7 @@
 namespace T10::DAL::ApiServices {
 	class IWebSocketApiService {
 	public:
-		virtual boost::future<void> connect(const std::string& host, const std::string& apiKey) = 0;
+		virtual boost::future<void> connect(const std::string& host, const std::map<std::string, std::string>& headers) = 0;
 		
 		virtual void send(const std::string& data) = 0;
 

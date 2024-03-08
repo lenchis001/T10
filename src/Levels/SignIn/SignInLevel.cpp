@@ -74,6 +74,6 @@ namespace T10::Levels::SignIn {
 
     void SignInLevel::_goToGarage()
     {
-        switchToLevel(Levels::MENU, {});
+        switchToLevel(Levels::GARAGE, {});
     }
 }

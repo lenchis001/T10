@@ -18,6 +18,7 @@
 #include "Levels/Cameras/GarageCameraAnimator.h"
 
 #include "Levels/Garage/BuyTankDialogController.h"
+#include "Levels/Garage/StartBattleDialogController.h"
 
 namespace T10::Levels::Garage
 {
@@ -41,6 +42,7 @@ namespace T10::Levels::Garage
 			boost::shared_ptr<BLL::Services::User::IUserService> userService,
 			boost::shared_ptr<BLL::Services::Tanks::ITankService> tankService,
 			boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> tankAssignemntService,
+			boost::shared_ptr<StartBattleDialogController> startBattleDialogController,
 			boost::shared_ptr<BuyTankDialogController> buyTankDialogController,
 			SwitchLevelCallbackFunction switchLevelCallback);
 
@@ -53,9 +55,11 @@ namespace T10::Levels::Garage
 		void _createScene();
 		void _goToBattle();
 		void _onTankSelected();
+		void _showStartBattleDialog();
 		void _showTanksBuyDialog();
 		void _lockGarageGui();
 		void _onBuyTankDialogHidden();
+		void _onStartBattleDialogHidden();
 		bool _updatTanksList();
 		void _clearGarage();
 		bool _updateUserData();
@@ -71,6 +75,7 @@ namespace T10::Levels::Garage
 		boost::shared_ptr<BLL::Services::TankAssignment::ITankAssignmentService> _tankAssignmentService;
 
 		boost::shared_ptr<BuyTankDialogController> _buyTankDialogController;
+		boost::shared_ptr< StartBattleDialogController> _startBattleDialogController;
 	};
 }
 

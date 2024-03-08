@@ -3,6 +3,8 @@
 
 #include "string"
 
+#define TOKEN_STORAGE_KEY L"token"
+
 namespace T10::DAL::Services {
 	class IStorageService {
 	public:

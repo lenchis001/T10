@@ -14,7 +14,7 @@ namespace T10::DAL::ApiServices
     class WebSocketApiService : public IWebSocketApiService, public boost::enable_shared_from_this<WebSocketApiService>
     {
     public:
-        boost::future<void> connect(const std::string& host, const std::string& apiKey) override;
+        boost::future<void> connect(const std::string& host, const std::map<std::string, std::string>& headers) override;
         void send(const std::string& data) override;
         void setDataHandler(boost::function<void(const std::string&)> handler) override;
         void disconnect() override;

@@ -18,6 +18,14 @@ namespace T10::DAL::Models
             return _error;
         }
 
+        bool isOk() {
+            return _error == ErrorCode::OK;
+        }
+
+        static ActionResult okResult() {
+            return ActionResult(ErrorCode::OK);
+        }
+
     private:
         ErrorCode _error;
     };

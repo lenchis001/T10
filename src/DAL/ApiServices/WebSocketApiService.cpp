@@ -2,18 +2,19 @@
 
 using namespace T10::DAL::ApiServices;
 
-boost::future<void> WebSocketApiService::connect(const std::string& host, const std::string& apiKey)
+boost::future<void> WebSocketApiService::connect(const std::string& host, const std::map<std::string, std::string>& headers)
 {
     // Create a client endpoint
     _client = boost::make_shared<client>();
+    _connectPromise = boost::promise<void>();
 
     // Set logging to be pretty verbose (everything except message payloads)
     _client->set_access_channels(websocketpp::log::alevel::all);
     _client->clear_access_channels(websocketpp::log::alevel::frame_payload);
     _client->set_open_handler([&](websocketpp::connection_hdl handler) {
-        _handler = handler;
+            _handler = handler;
 
-        _connectPromise.set_value();
+            _connectPromise.set_value();
         });
 
     // Initialize ASIO
@@ -26,7 +27,10 @@ boost::future<void> WebSocketApiService::connect(const std::string& host, const 
 
     websocketpp::lib::error_code ec;
     client::connection_ptr con = _client->get_connection(host, ec);
-    con->append_header("apiKey", apiKey);
+
+    for (auto& header : headers) {
+        con->append_header(header.first, header.second);
+    }
 
     _client->connect(con);
 
@@ -49,5 +53,5 @@ void WebSocketApiService::setDataHandler(boost::function<void(const std::string&
 
 void WebSocketApiService::disconnect()
 {
-    _client->stop();
+    _client->close(_handler, websocketpp::close::status::normal, "");
 }

@@ -15,3 +15,9 @@ ErrorCode BaseService::_toBllErrorCode(DAL::Models::ErrorCode dalErrorCode)
 		throw "An unknown mapping from DAL error codes";
 	}
 }
+
+ActionResult BaseService::_toBllActionResult(DAL::Models::ActionResult dalActionResult) {
+	auto error = _toBllErrorCode(dalActionResult.getError());
+
+	return ActionResult(error);
+}

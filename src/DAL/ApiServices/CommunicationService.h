@@ -5,16 +5,12 @@
 #include "string"
 
 #include "boost/beast.hpp"
-#include "boost/locale.hpp"
 #include "ICommunicationService.h"
 
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
-
-#define TO_WSTRING(x) boost::locale::conv::utf_to_utf<wchar_t>(x.data())
-#define TO_STRING(x) boost::locale::conv::utf_to_utf<char>(x)
 
 namespace T10::DAL::ApiServices
 {
