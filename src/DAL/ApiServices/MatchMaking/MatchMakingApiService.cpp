@@ -28,7 +28,7 @@ ActionResult MatchMakingApiService::joinQueue(int tankId) {
 	headers["Authorization"] = "Bearer " + TO_STRING(token);
 	headers["tankid"] = std::to_string(tankId);
 
-	_webSocketApiService->connect("ws://localhost:8089", headers);
+	_webSocketApiService->connect("ws://localhost:8086", headers).;
 
 	return ActionResult::okResult();
 }

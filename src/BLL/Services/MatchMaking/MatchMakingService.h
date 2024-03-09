@@ -20,7 +20,7 @@ namespace T10::BLL::Services::MatchMaking {
 			boost::shared_ptr<DAL::Services::IStorageService> storageService
 		);
 
-		Models::ActionResult joinQueue(int tankId) override;
+		Models::DataActionResult<boost::future<void>> joinQueue(int tankId) override;
 		void leaveQueue() override;
 
 		void setBattleStartedHandler(OnBattleStarted handler) override;

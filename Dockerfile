@@ -18,4 +18,4 @@ WORKDIR /Project
 COPY . .
 RUN mkdir /Project/build
 WORKDIR /Project/build
-RUN cmake .. && make -j4
+RUN cmake .. && make -j$(python3 -c 'import multiprocessing; print(multiprocessing.cpu_count())')

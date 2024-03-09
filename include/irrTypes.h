@@ -146,6 +146,10 @@ typedef unsigned short wchar_t;
 #define _snprintf snprintf
 #endif // _IRR_OSX_PLATFORM_
 
+#ifdef _IRR_LINUX_PLATFORM_
+#define _snprintf snprintf
+#endif // _IRR_LINUX_PLATFORM_
+
 namespace irr
 {
 

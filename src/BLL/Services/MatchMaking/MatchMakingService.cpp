@@ -15,10 +15,12 @@ MatchMakingService::MatchMakingService(
 	_storageService = storageService;
 }
 
-ActionResult MatchMakingService::joinQueue(int tankId) {
+BLL::Models::DataActionResult<boost::future<void>> MatchMakingService::joinQueue(int tankId) {
 	auto dalResult = _matchMakingApiService->joinQueue(tankId);
 
-	return _toBllActionResult(dalResult);
+	auto error = _toBllError(dalResult.getError());
+
+	return DataActionResult<boost::future<void>>(error, dalResult.getData());
 }
 
 void MatchMakingService::leaveQueue() {

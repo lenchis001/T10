@@ -1,14 +1,19 @@
 #ifndef BATTLE_STATE_SYNCHRONIZATION_SERVICE_H
 #define BATTLE_STATE_SYNCHRONIZATION_SERVICE_H
 
-#include "vector"
-#include "DAL/ApiServices/IWebSocketApiService.h"
 #include "IBattleStateSynchronizationService.h"
+
+#include "vector"
+
+#include "boost/json.hpp"
+
+#include "DAL/ApiServices/IWebSocketApiService.h"
+
 #include "BLL/Models/Tracking/Request/FireTrackingRequest.hpp"
 #include "BLL/Models/Tracking/Request/MoveTurretTrackingRequest.hpp"
 #include "BLL/Models/Tracking/Request/MoveBodyTrackingRequest.hpp"
+
 #include "Tracking/MessageHandling/IMessageHandlerFactory.h"
-#include "boost/json.hpp"
 
 namespace T10::BLL::Services::BattleState {
 	class BattleStateSynchronizationService : public IBattleStateSynchronizationService {
